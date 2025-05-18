@@ -1,0 +1,85 @@
+---
+interface Props {
+    titulo: string,
+    descripcion: string,
+}
+
+const { titulo, descripcion } = Astro.props
+---
+
+<!DOCTYPE html>
+<html lang="es" >
+<head class="scroll-smooth m-0 p-0 h-screen font- font-light">
+    <meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+		<meta name="description" content={descripcion} />
+		<meta name="keywords" content="Liga, torneos, juegos, videojuegos, futbol" />
+
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content="https://www.leaguebase.com/" />
+		<meta property="og:title" content=`LeagueBase - ${titulo}` />
+		<meta property="og:description" content={descripcion} />
+		<meta property="og:image" content="/assets/portada.jpg" />
+
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:url" content="https://www.leaguebase.com/" />
+		<meta name="twitter:title" content=`LeagueBase - ${titulo}` />
+		<meta name="twitter:description" content={descripcion} />
+		<meta name="twitter:image" content="/assets/portada.jpg" />
+
+		<link rel="sitemap" href="/sitemap-index.xml" />
+
+		<link rel="icon" type="image/svg+xml" href="/assets/svg/favicon.ico" />
+		<link rel="icon" href="/assets/svg/favicon.ico" />
+		<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="import" href="component.html">
+    <title>League Base - {titulo}</title>
+</head>
+<body class="min-h-screen bg-[radial-gradient(ellipse_at_top_left,_#1E293B,_#0F172A)] text-white">
+    <header class="border-y-indigo-950 bg-linear-to-t from-slate-950 to-slate-900 shadow-md px-10 py-3 md:p-4 flex items-center justify-between md:justify-evenly relative md:gap-14">
+        <a href="/" class="logo">
+          <img src="/assets/img/logo.png" alt="LeagueBase - Inicio" class="h-8 md:h-12">
+        </a>
+      
+        <input type="checkbox" id="menu" class="hidden peer"/>
+        <label for="menu" class="cursor-pointer md:hidden">
+          <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="25" height="25" viewBox="0,0,256,256">
+            <g fill="#6C63FF" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><g transform="scale(5.12,5.12)"><path d="M5,8c-0.72127,-0.0102 -1.39216,0.36875 -1.75578,0.99175c-0.36361,0.623 -0.36361,1.39351 0,2.01651c0.36361,0.623 1.0345,1.00195 1.75578,0.99175h40c0.72127,0.0102 1.39216,-0.36875 1.75578,-0.99175c0.36361,-0.623 0.36361,-1.39351 0,-2.01651c-0.36361,-0.623 -1.0345,-1.00195 -1.75578,-0.99175zM5,23c-0.72127,-0.0102 -1.39216,0.36875 -1.75578,0.99175c-0.36361,0.623 -0.36361,1.39351 0,2.01651c0.36361,0.623 1.0345,1.00195 1.75578,0.99175h40c0.72127,0.0102 1.39216,-0.36875 1.75578,-0.99175c0.36361,-0.623 0.36361,-1.39351 0,-2.01651c-0.36361,-0.623 -1.0345,-1.00195 -1.75578,-0.99175zM5,38c-0.72127,-0.0102 -1.39216,0.36875 -1.75578,0.99175c-0.36361,0.623 -0.36361,1.39351 0,2.01651c0.36361,0.623 1.0345,1.00195 1.75578,0.99175h40c0.72127,0.0102 1.39216,-0.36875 1.75578,-0.99175c0.36361,-0.623 0.36361,-1.39351 0,-2.01651c-0.36361,-0.623 -1.0345,-1.00195 -1.75578,-0.99175z"></path></g></g>
+          </svg>
+        </label>
+    
+        <nav class="bg-linear-to-t from-slate-950 to-slate-800 hidden md:bg-none md:block peer-checked:block absolute top-14 left-0 w-full border-border-soraya z-50 md:relative md:top-0 md:w-max">
+          <ul class="flex flex-col align-center justify-center md:flex-row md:gap-8 xl:gap-12">
+            <li class="p-5 text-texto-primario hover:text-terciario w-full text-center hover:text-soraya md:w-max md:p-0 md:self-center"><a class="relative transition-all" href="/">Inicio</a></li>
+            <li class="p-5 text-texto-primario hover:text-terciario w-full text-center hover:text-soraya md:w-max md:p-0 md:self-center"><a class="relative transition-all" href="/torneos">Torneos</a></li>
+            <li class="p-5 text-texto-primario hover:text-terciario w-full text-center hover:text-soraya md:w-max md:p-0 md:self-center"><a class="relative transition-all" href="/equipos">Equipos</a></li>
+            <li class="p-5 text-texto-primario hover:text-terciario w-full text-center hover:text-soraya md:w-max md:p-0 md:self-center"><a class="relative transition-all" href="/jugadores">Jugadores</a></li>
+            <li id="contactEnlace" class="bg-soraya p-5 text-texto-primario hover:text-terciario w-full text-center md:w-max md:p-0 md:self-center md:rounded-3xl"><a class="md:relative" href="/crear-torneo">Crear Torneo</a></li>
+            <li class=" py-4 md:bg-none md:py-0">
+              <a href="/login">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#F9FAFB" class="size-10 m-auto md:m-0">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                </svg>
+              </a>
+            </li>
+
+          </ul>
+        </nav>
+      </header>
+    <slot/>
+
+    <footer class="bg-linear-to-t from-slate-950 to-slate-900 text-texto-primario py-8">
+        <p class="text-center">@League Base - 2025</p>
+    </footer>   
+</body>
+</html>
+
+<style is:global>
+    p {
+        line-height: 1.5rem;
+        line-height: 1lh;
+    }
+    
+
+</style>

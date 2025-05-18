@@ -1,16 +1,25 @@
 ---
-
+import Layout from "../layouts/Layout.astro"
+import "../styles/global.css"
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout titulo="Inicio" descripcion="Bienvenido a League Base. Crea un torneo en minutos, sin registro.">
+	<main>
+		<section class="flex flex-col-reverse lg:flex-row justify-center max-w-7xl m-auto mb-12">
+			<article class="max-w-md m-auto text-center md:text-left">
+				<h1 class="my-6 lg:mx-6 px-4 lg:px-0 w-full font-montserrat text-texto-primario text-2xl lg:text-3xl">LeagueBase - La plataforma definitiva de torneos multideporte y videojuegos</h1>
+				<p class="my-6 lg:mx-6 px-4 lg:px-0 w-full font-montserrat text-[14px] lg:text-[16px] text-texto-primario">
+					Organiza, compite y sigue tus torneos favoritos en tiempo real.
+				</p>
+				<a 
+  href="/crear-torneo"
+  class="my-10 mx-4 lg:mx-6 px-6 py-3 w-full max-w-fit font-montserrat text-[14px] lg:text-[16px] text-white bg-[#3B4FC5] hover:bg-[#404d92] shadow-md rounded-full transition duration-200 ease-in-out transform hover:scale-105"
+>
+  Crear Torneo
+</a>
+
+			</article>
+			<img class="m-auto xl:h-[90vh] lg:h-[80vh] md:h-[60vh] h-[40vh] max-w-fit" src="/assets/img/portada2.png" alt="Imagen portada de LeagueBase">
+		</section>
+	</main>
+</Layout>		

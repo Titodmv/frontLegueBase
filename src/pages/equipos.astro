@@ -1,0 +1,26 @@
+---
+import Layout from "../layouts/Layout.astro"
+import TopEquipos from "../components/TopEquipos.astro"
+import "../styles/global.css"
+
+const response = await fetch("http://localhost:8080/api/equipos", {
+  headers: {
+    "Authorization": "Basic " + btoa("leaguebase:leaguebase"),
+  },
+});
+
+const equipos = await response.json();
+---
+
+<Layout titulo="Equipos" descripcion="Descubre y sigue a tus equipos favoritos en cada partido">
+    
+    <TopEquipos />
+
+    {equipos.map((equipo:any) => (
+        <div class="equipo-card">
+            <h2>{equipo.nombre}</h2>
+            <img src={equipo.urlFoto} alt={equipo.nombre} />
+            <p>{equipo.descripcion}</p>
+        </div>
+    ))}
+</Layout>

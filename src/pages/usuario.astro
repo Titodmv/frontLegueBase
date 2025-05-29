@@ -1,0 +1,71 @@
+---
+import Layout from "../layouts/Layout.astro"
+import "../styles/global.css"
+---
+
+<Layout titulo="Usuario" descripcion="Página de usuario">
+   <main>
+    <section class=" text-primario px-4 pt-16 flex items-center justify-center">
+        <div class="w-full max-w-2xl bg-linear-to-t from-slate-950 to-slate-900 rounded-2xl shadow-2xl p-8">
+            <h1 class="text-2xl font-bold text-white mb-8 border-b border-white/10 pb-4">👤 Mi Perfil</h1>
+
+            <div class="grid gap-6">
+                <div class="flex flex-col">
+                    <span class="text-sm text-gray-400">Nombre</span>
+                    <span class="text-lg font-medium text-white">Nombre</span>
+                </div>
+
+                <div class="flex flex-col">
+                    <span class="text-sm text-gray-400">Correo electrónico</span>
+                    <span class="text-lg font-medium text-white">correo@electronico.com</span>
+                </div>
+
+                <div class="flex flex-col">
+                    <span class="text-sm text-gray-400">Rol</span>
+                    <span class="text-lg font-medium text-white">Usuario</span>
+                </div>
+
+                <div class="flex flex-col">
+                    <span class="text-sm text-gray-400">Usuario desde</span>
+                    <span class="text-lg font-medium text-white">20 de Febrero de 2004</span>
+                </div>
+            </div>
+
+            <div class="mt-10 pt-6 border-t border-white/10">
+            <h2 class="text-xl font-semibold text-white mb-4">🔐 Cambiar Contraseña</h2>
+            <form class="grid gap-4">
+                <input type="password" name="contraseña_actual" placeholder="Contraseña actual" class="bg-[#334155] rounded-xl px-4 py-2 text-white placeholder-gray-400 focus:ring-2 focus:ring-[#4C5FD5] outline-none" />
+                <input type="password" name="contraseña_nueva" placeholder="Nueva contraseña" class="bg-[#334155] rounded-xl px-4 py-2 text-white placeholder-gray-400 focus:ring-2 focus:ring-[#4C5FD5] outline-none" />
+                <input type="password" name="contraseña_repetida" placeholder="Confirmar nueva contraseña" class="bg-[#334155] rounded-xl px-4 py-2 text-white placeholder-gray-400 focus:ring-2 focus:ring-[#4C5FD5] outline-none" />
+                <input type="submit" class="bg-[#4C5FD5] hover:bg-[#3b4bbc] transition-all text-white px-6 py-3 rounded-xl font-semibold mt-2" value="Guardar Contraseña"></input>
+            </form>
+            </div>
+        </div>
+    </section>
+   </main>
+</Layout>
+
+<script>
+    window.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form') as HTMLFormElement;
+        const boton = document.querySelector('input[type="submit"]') as HTMLInputElement;
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            boton.disabled = true;
+            const datosFormulario = new FormData(form);
+            const objetoFormulario = Object.fromEntries(datosFormulario.entries());
+
+            if (objetoFormulario.contraseña_nueva != objetoFormulario.contraseña_repetida) {
+                alert("La nueva contraseña no coincide, Porfavor introduce dos veces la nueva contraseña");
+            }else {
+                await fetch ('/cambiar_contaseña', {
+
+                })
+            }
+
+            boton.disabled = false;
+        })
+    })
+</script>

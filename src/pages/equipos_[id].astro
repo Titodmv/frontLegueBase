@@ -1,0 +1,36 @@
+---
+import Layout from "../layouts/Layout.astro"
+import "../styles/global.css"
+import { render} from "astro:content";
+
+const equipos = await fetch('/equipos', {
+    method: 'GET',
+    headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+    }
+})
+
+const equiposData = await equipos.json();
+
+export async function getStaticPaths () {
+
+    return equiposData.map((elemento:any) => ({
+        params: { id: elemento.nombre},
+        props: { elemento }
+    }));
+}
+
+const { elemento } = Astro.props;
+const { slug } = elemento;
+const { data } = elemento;
+const { nombre, img } = data;
+
+const { Content } = await render(elemento)
+export const prerender = true
+
+---
+
+<Layout titulo={nombre} descripcion="">
+    <p>{slug}</p>
+</Layout>

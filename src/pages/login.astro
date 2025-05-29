@@ -1,0 +1,57 @@
+---
+import Layout from "../layouts/Layout.astro"
+import "../styles/global.css"
+---
+
+<Layout titulo="Login" descripcion="Página de login">
+    <main class="flex flex-col items-center justify-center">
+        <div class="flex flex-col items-center justify-center shadow-sm bg-linear-to-t from-slate-950 to-slate-900 rounded-2xl pt-8">
+            <h1 class="text-3xl">Iniciar Sessión</h1>
+            <form class="p-8 w-[350px]">
+                <label for="username" class="text-primario">Correo Electronico</label>
+                <input type="text" id="username" class="pl-2 mt-1 w-full border border-gray-300 rounded-md shadow-sm focus:ring transition-all focus:ring-blue-500 mb-8" autocomplete="email" required />
+                
+                <label for="password" class="text-primario">Contraseña</label>
+                <input type="password" id="password" class="pl-2 mt-1 w-full border border-gray-300 rounded-md shadow-sm focus:ring transition-all focus:ring-blue-500 mb-8" autocomplete="current-password" required />
+                <input type="submit" value="Iniciar Sessión" class="w-full bg-blue-600 text-white px-4 py-2 rounded-md cursor-pointer hover:bg-blue-700 transition-all" />
+            </form>
+        </div>
+        <p class="mt-4">¿No tienes una cuenta? Crea una cuenta <a href="/sing-up" class="underline text-blue-600">aqui</a></p>
+    </main>
+</Layout>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const form = document.querySelector('form') as HTMLFormElement;
+        const boton = document.querySelector('input[type="submit"]') as HTMLInputElement;
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            boton.disabled = true;
+            const datosFormularios = new FormData(form);
+
+            await fetch('/api/login', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer TU_API_KEY_PRIVADA'
+                },
+                body: datosFormularios,
+            }).then((response) => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('Error en la solicitud');
+                }
+            }).then((data) => {
+                console.log(data);
+                window.location.href = 'http://localhost:4321/usuario';
+            }).catch((error) => {
+                console.error('Error:', error);
+                alert('Error al iniciar sesión. Por favor, inténtalo de nuevo.');
+            });
+
+            boton.disabled = false;
+        });
+    });
+</script>

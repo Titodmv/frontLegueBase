@@ -2,6 +2,8 @@
 import { defineConfig } from 'astro/config';
 import tailwindcss from "@tailwindcss/vite";
 import cloudflare from "@astrojs/cloudflare";
+import { envField } from 'astro/config';
+import 'dotenv/config';
 
 
 // https://astro.build/config
@@ -11,4 +13,10 @@ export default defineConfig({
     vite: {
         plugins: [tailwindcss()],
     },
+    env: {
+    schema: {
+        USER: envField.string({ context: 'server', access: 'secret'}),
+        API_KEY: envField.string({ context: 'server', access:'secret'})
+    }
+  },
 });

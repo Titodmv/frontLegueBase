@@ -1,29 +1,22 @@
 ---
 import "../styles/global.css"
 
-const response = await fetch("http://localhost:8080/api/equipos", {
-  headers: {
-    "Authorization": "Basic " + btoa("leaguebase:leaguebase"),
-  },
-});
+interface Props {
+  titulo: string;
+  top: any[];
+  atributo1: string;
+  atributo2: string;
+}
 
-let equipos = await response.json();
-equipos = equipos.sort((a: any, b: any) => {
-  return (b.ligasGanadas+b.torneosGanados) - (a.ligasGanadas+a.torneosGanados);
-});
-
-equipos = equipos.slice(0, 3);
+const { titulo, top, atributo1, atributo2 } = Astro.props;
 
 let contador = 0;
 ---
 
 <div class="max-w-6xl mx-auto px-4 py-10 text-center">
-  <h2 class="text-3xl font-montserrat font-bold mb-8 text-primario">
-    🏆 TOP MEJORES EQUIPOS
-  </h2>
-
+  <h2 class="text-3xl font-montserrat font-bold mb-8 text-primario">{titulo}</h2>
   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 items-start">
-    {equipos.map((equipo: any, index: number) => {
+    {top.map((equipo: any, index: number) => {
     contador++;
   const card = (
     <div class="w-full max-w-sm mx-auto bg-gradient-to-t from-slate-950 to-slate-800 rounded-2xl shadow-md hover:shadow-lg transition duration-300 p-6 flex flex-col items-center">
@@ -44,10 +37,10 @@ let contador = 0;
         {equipo.nombre}
       </h3>
       <p class="text-sm text-texto-primario">
-        🥇 <strong>Ligas ganadas:</strong> {equipo.ligasGanadas}
+        🥇 <strong>{atributo1}</strong> {equipo.ligasGanadas}
       </p>
       <p class="text-sm text-texto-primario">
-        🏆 <strong>Torneos ganados:</strong> {equipo.torneosGanados}
+        🏆 <strong>{atributo2}</strong> {equipo.torneosGanados}
       </p>
     </div>
   );

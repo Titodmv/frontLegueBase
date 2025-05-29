@@ -1,7 +1,20 @@
 ---
 import Layout from "../layouts/Layout.astro"
-import TopEquipos from "../components/TopEquipos.astro"
+import Top from "../components/Top.astro"
 import "../styles/global.css"
+
+const response = await fetch("http://localhost:8080/api/equipos", {
+  headers: {
+    "Authorization": "Basic " + btoa("leaguebase:leaguebase"),
+  },
+});
+
+const equipos = await response.json();
+
+
+let equiposTop = equipos.sort((a: any, b: any) => {return (b.ligasGanadas+b.torneosGanados) - (a.ligasGanadas+a.torneosGanados);});
+equiposTop = equiposTop.slice(0, 3);
+
 ---
 
 <Layout titulo="Inicio" descripcion="Bienvenido a League Base. Crea un torneo en minutos, sin registro.">
@@ -17,5 +30,5 @@ import "../styles/global.css"
 			<img class="m-auto xl:h-[90vh] lg:h-[80vh] md:h-[60vh] h-[40vh] max-w-fit" src="/assets/img/portada2.png" alt="Imagen portada de LeagueBase">
 		</section>
 	</main>
-	<TopEquipos />
+  <Top titulo="🏆 TOP MEJORES EQUIPOS" top={equiposTop} atributo1="Ligas ganadas: " atributo2="Torneos ganados: "/>
 </Layout>

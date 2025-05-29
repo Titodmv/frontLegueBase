@@ -1,0 +1,72 @@
+---
+import Layout from "../layouts/Layout.astro";
+import type { APIContext } from "astro";
+import "../styles/global.css";
+
+// Obtener rutas estáticas
+export async function getStaticPaths() {
+  const response = await fetch("http://localhost:8080/api/equipos", {
+    headers: {
+      Authorization: "Basic " + btoa("leaguebase:leaguebase"),
+    },
+  });
+
+  const equipos = await response.json();
+
+  return equipos.map((equipo: any) => ({
+    params: { id: equipo.nombre}, // slug
+    props: { equipo },
+  }));
+}
+
+const { equipo } = Astro.props;
+const { nombre, urlFoto, ligasGanadas, torneosGanados, fechaCreacion, torneosJugados, ligasJugadas } = equipo;
+
+let fecha = new Date(fechaCreacion);
+let fechaEspañol = fecha.toLocaleDateString("es-ES", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+});
+
+fechaEspañol = fechaEspañol.toUpperCase();
+---
+
+<Layout titulo={nombre} descripcion={`El quipo ${nombre} tiene ${ligasGanadas} ligas ganadas y ${torneosGanados} torneos ganados.`}>
+    <div class="max-w-6xl mx-auto px-4 py-10 text-center">
+        <h1 class="text-4xl font-bold mb-4">{nombre}</h1>
+        <img transition:name={`img-${nombre}`} class="w-60 h-auto object-contain mb-4 mx-auto" src={urlFoto} alt={nombre} />
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
+            <div class="border border-white/20 rounded-lg p-4 text-left">
+                <p class="text-sm text-gray-400 uppercase">Ligas ganadas</p>
+                <p class="text-xl text-white font-semibold">{ligasGanadas}</p>
+            </div>
+
+            <div class="border border-white/20 rounded-lg p-4 text-left">
+                <p class="text-sm text-gray-400 uppercase">Torneos ganados</p>
+                <p class="text-xl text-white font-semibold">{torneosGanados}</p>
+            </div>
+
+            <div class="border border-white/20 rounded-lg p-4 text-left">
+                <p class="text-sm text-gray-400 uppercase">Fecha de creación</p>
+                <p class="text-xl text-white font-semibold">{fechaEspañol}</p>
+            </div>
+
+            <div class="border border-white/20 rounded-lg p-4 text-left">
+                <p class="text-sm text-gray-400 uppercase">Torneos jugados</p>
+                <p class="text-xl text-white font-semibold">{torneosJugados}</p>
+            </div>
+
+            <div class="border border-white/20 rounded-lg p-4 text-left sm:col-span-2">
+                <p class="text-sm text-gray-400 uppercase">Ligas jugadas</p>
+                <p class="text-xl text-white font-semibold">{ligasJugadas}</p>
+            </div>
+        </div>
+
+    
+        <div class="max-w-6xl mx-auto px-4 py-10 text-center">
+            <a href="/equipos" class="px-4 py-2 bg-terciario text-white rounded-lg hover:bg-blue-700 transition duration-200">Volver a equipos</a>
+        </div>
+    </div>
+</Layout>

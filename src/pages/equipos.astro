@@ -1,6 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro"
-import TopEquipos from "../components/TopEquipos.astro"
+import Top from "../components/Top.astro"
 import "../styles/global.css"
 
 const response = await fetch("http://localhost:8080/api/equipos", {
@@ -10,17 +10,62 @@ const response = await fetch("http://localhost:8080/api/equipos", {
 });
 
 const equipos = await response.json();
+
+
+let equiposTop = equipos.sort((a: any, b: any) => {return (b.ligasGanadas+b.torneosGanados) - (a.ligasGanadas+a.torneosGanados);});
+equiposTop = equiposTop.slice(0, 3);
 ---
 
-<Layout titulo="Equipos" descripcion="Descubre y sigue a tus equipos favoritos en cada partido">
-    
-    <TopEquipos />
+<Layout titulo="Equipos" descripcion="Descubre a tus equipos favoritos en cada partido">
+  <Top titulo="🏆 TOP MEJORES EQUIPOS" top={equiposTop} atributo1="Ligas ganadas: " atributo2="Torneos ganados: "/>
 
-    {equipos.map((equipo:any) => (
-        <div class="equipo-card">
-            <h2>{equipo.nombre}</h2>
-            <img src={equipo.urlFoto} alt={equipo.nombre} />
-            <p>{equipo.descripcion}</p>
+
+  <div class="max-w-6xl mx-auto px-4 py-10 text-center">
+
+    <hr class="border-t-2 border-terciario my-20"/>
+
+    <div class="flex gap-6 items-center justify-center">
+      <form class="flex flex-row items-center mt-10 mb-6 gap-6 flex-wrap justify-center">
+
+        <div>
+          <label class="block mb-2 text-left text-sm font-medium text-texto-secundario">Ordenar por:</label>
+          <select class="w-full max-w-md p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6">
+            <option class="text-texto-secundario" value="">Selecciona una opción</option>
+            <option class="text-texto-secundario" value="nombre">Nombre</option>
+            <option class="text-texto-secundario" value="ligasGanadas">Ligas ganadas</option>
+            <option class="text-texto-secundario" value="torneosGanados">Torneos ganados</option>
+          </select>
         </div>
-    ))}
+
+        <div>
+          <label class="block mb-2 text-left text-sm font-medium text-texto-secundario">Tipo de deporte:</label>
+          <select class="w-full max-w-md p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6">
+            <option class="text-texto-secundario" value="">Selecciona una opción</option>
+          </select>
+        </div>
+
+        <input type="submit" value="Filtrar" class="px-4 py-2 bg-terciario text-white rounded-lg hover:bg-blue-700 transition duration-200"/>
+      </form>
+
+      <form class="flex flex-row items-center mt-10 mb-6 gap-6 justify-center">
+        <input type="text" placeholder="Buscar equipo..." class="w-full max-w-md p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        <input type="submit" class="px-4 py-2 h-max bg-terciario text-white rounded-lg hover:bg-blue-700 transition duration-200"></input>
+      </form>
+
+    </div>
+
+    <did class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 items-start">
+      {equipos.map((equipo: any) => {
+        return <div class="w-full max-w-sm mx-auto bg-gradient-to-t from-slate-950 to-slate-800 rounded-2xl shadow-md hover:shadow-lg transition duration-300 p-6 flex flex-col items-center">
+          <img transition:name={`img-${equipo.nombre}`} class="w-60 h-auto object-contain mb-4" src={equipo.urlFoto} alt={equipo.nombre}/>
+          <h3 class="text-lg font-bold mb-2 text-primario">{equipo.nombre}</h3>
+          <p class="text-sm text-texto-primario">🥇 <strong>Ligas ganadas:</strong> {equipo.ligasGanadas}</p>
+          <p class="text-sm text-texto-primario">🏆 <strong>Torneos ganados:</strong> {equipo.torneosGanados}</p>
+          <a href={`/equipo_${equipo.nombre}`} class="mt-2 px-4 py-1 h-max bg-terciario text-white rounded-lg hover:bg-blue-700 transition duration-200">Ver más</a>
+        </div>
+      })}
+    </div>
+  </div>
 </Layout>
+
+<script></script>

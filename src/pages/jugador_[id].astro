@@ -1,27 +1,35 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import "../styles/global.css";
+import { API_URL } from "astro:env/server";
+import { API_KEY } from "astro:env/server";
+import { USER } from "astro:env/server";
 
 // Obtener rutas estáticas
 export async function getStaticPaths() {
-  const response = await fetch("http://localhost:8080/api/jugadores", {
+  const response = await fetch(`${API_URL}jugadores/con-equipo`, {
     headers: {
-      Authorization: "Basic " + btoa("leaguebase:leaguebase"),
+      Authorization: "Basic " + btoa(`${USER}:${API_KEY}`),
     },
   });
 
-  const equipos = await response.json();
+  const jugadores = await response.json();
 
-  return equipos.map((equipo: any) => ({
-    params: { id: equipo.nombre}, // slug
-    props: { equipo },
+  console.log("Jugadores obtenidos:", jugadores);
+  
+
+  return jugadores.map((jugador: any) => ({
+    params: { id: jugador.nickname}, // slug
+    props: { jugador },
   }));
 }
 
-const { equipo } = Astro.props;
-const { nombre, urlFoto, ligasGanadas, torneosGanados, fechaCreacion, torneosJugados, ligasJugadas } = equipo;
+const { jugador } = Astro.props;
+const { nickname, urlFoto, nombreEquipo, nombreEstadisticaPrincipal, valorEstadisticaPrincipal, fechaUnion } = jugador;
 
-let fecha = new Date(fechaCreacion);
+console.log(jugador);
+
+let fecha = new Date(fechaUnion);
 let fechaEspañol = fecha.toLocaleDateString("es-ES", {
     year: "numeric",
     month: "long",
@@ -31,7 +39,32 @@ let fechaEspañol = fecha.toLocaleDateString("es-ES", {
 fechaEspañol = fechaEspañol.toUpperCase();
 
 export const prerender = true;
+---
+<Layout titulo={nickname} descripcion=" d"> 
+    <div class="max-w-6xl mx-auto px-4 py-10 text-center">
+        <h1 class="text-4xl font-bold mb-4">{nickname}</h1>
+        <img transition:name={`img-${nickname}`} class="w-60 h-auto object-contain mb-4 mx-auto" src="/assets/img/usuario.png" alt={nickname} />
 
-<Layout titulo="" descripcion="">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
+            <div class="border border-white/20 rounded-lg p-4 text-left">
+                <p class="text-sm text-gray-400 uppercase">Equipo</p>
+                <p class="text-xl text-white font-semibold">{nombreEquipo}</p>
+            </div>
+
+            <div class="border border-white/20 rounded-lg p-4 text-left">
+                <p class="text-sm text-gray-400 uppercase">Fecha de Union</p>
+                <p class="text-xl text-white font-semibold">{fechaEspañol}</p>
+            </div>
+
+            <div class="border border-white/20 rounded-lg p-4 text-left">
+                <p class="text-sm text-gray-400 uppercase">{nombreEstadisticaPrincipal}</p>
+                <p class="text-xl text-white font-semibold">{valorEstadisticaPrincipal}</p>
+            </div>
+        </div>
+
     
+        <div class="max-w-6xl mx-auto px-4 py-10 text-center">
+            <a href="/jugadores" class="px-4 py-2 bg-terciario text-white rounded-lg hover:bg-blue-700 transition duration-200">Volver a los jugadores</a>
+        </div>
+    </div>
 </Layout>

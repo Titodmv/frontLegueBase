@@ -13,8 +13,6 @@ const response = await fetch(`${API_URL}jugadores/con-equipo`, {
 });
 
 const jugadores = await response.json();
-console.log(jugadores);
-
 
 let jugadoresTop = jugadores.sort((a: any, b: any) => {return b.valorEstadisticaPrincipal - a.valorEstadisticaPrincipal;});
 

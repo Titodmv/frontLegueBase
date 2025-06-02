@@ -1,7 +1,36 @@
 ---
-import Layout from "../layouts/Layout.astro"
-import "../styles/global.css"
----
+import Layout from "../layouts/Layout.astro";
+import "../styles/global.css";
+
+// Obtener rutas estáticas
+export async function getStaticPaths() {
+  const response = await fetch("http://localhost:8080/api/jugadores", {
+    headers: {
+      Authorization: "Basic " + btoa("leaguebase:leaguebase"),
+    },
+  });
+
+  const equipos = await response.json();
+
+  return equipos.map((equipo: any) => ({
+    params: { id: equipo.nombre}, // slug
+    props: { equipo },
+  }));
+}
+
+const { equipo } = Astro.props;
+const { nombre, urlFoto, ligasGanadas, torneosGanados, fechaCreacion, torneosJugados, ligasJugadas } = equipo;
+
+let fecha = new Date(fechaCreacion);
+let fechaEspañol = fecha.toLocaleDateString("es-ES", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+});
+
+fechaEspañol = fechaEspañol.toUpperCase();
+
+export const prerender = true;
 
 <Layout titulo="" descripcion="">
     

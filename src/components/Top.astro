@@ -16,14 +16,14 @@ let contador = 0;
 <div class="max-w-6xl mx-auto px-4 py-10 text-center">
   <h2 class="text-3xl font-montserrat font-bold mb-8 text-primario">{titulo}</h2>
   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 items-start">
-    {top.map((equipo: any, index: number) => {
+    {top.map((topSolo: any, index: number) => {
     contador++;
   const card = (
     <div class="w-full max-w-sm mx-auto bg-gradient-to-t from-slate-950 to-slate-800 rounded-2xl shadow-md hover:shadow-lg transition duration-300 p-6 flex flex-col items-center">
       <img
         class="w-60 h-auto object-contain mb-4"
-        src={equipo.urlFoto}
-        alt={equipo.nombre}
+        src={topSolo.urlFoto}
+        alt={topSolo.nombre}
       />
       <h3
         class={
@@ -34,13 +34,13 @@ let contador = 0;
             : 'text-lg font-bold mb-2 text-amber-800'
         }
       >
-        {equipo.nombre}
+        {topSolo.nombre}
       </h3>
       <p class="text-sm text-texto-primario">
-        🥇 <strong>{atributo1}</strong> {equipo.ligasGanadas}
+        <strong>{atributo1} {topSolo.atributo1}</strong>
       </p>
       <p class="text-sm text-texto-primario">
-        🏆 <strong>{atributo2}</strong> {equipo.torneosGanados}
+        <strong>{atributo2} {topSolo.atributo2}</strong>
       </p>
     </div>
   );

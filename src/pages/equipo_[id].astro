@@ -1,11 +1,11 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import type { APIContext } from "astro";
+import { API_URL } from "astro:env/server";
 import "../styles/global.css";
 
 // Obtener rutas estáticas
 export async function getStaticPaths() {
-  const response = await fetch("http://localhost:8080/api/equipos", {
+  const response = await fetch(`${API_URL}equipos`, {
     headers: {
       Authorization: "Basic " + btoa("leaguebase:leaguebase"),
     },
@@ -30,6 +30,8 @@ let fechaEspañol = fecha.toLocaleDateString("es-ES", {
 });
 
 fechaEspañol = fechaEspañol.toUpperCase();
+
+export const prerender = true;
 ---
 
 <Layout titulo={nombre} descripcion={`El quipo ${nombre} tiene ${ligasGanadas} ligas ganadas y ${torneosGanados} torneos ganados.`}>

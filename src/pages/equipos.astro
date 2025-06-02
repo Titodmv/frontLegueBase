@@ -1,60 +1,87 @@
 ---
 import Layout from "../layouts/Layout.astro"
 import Top from "../components/Top.astro"
+import { API_URL } from "astro:env/server"
+import { API_KEY } from "astro:env/server"
+import { USER } from "astro:env/server"
 import "../styles/global.css"
 
-const response = await fetch("http://localhost:8080/api/equipos", {
+const response = await fetch(`${API_URL}equipos`, {
   headers: {
-    "Authorization": "Basic " + btoa("leaguebase:leaguebase"),
+    "Authorization": "Basic " + btoa(`${USER}:${API_KEY}`),
   },
 });
 
 const equipos = await response.json();
 
+const juegos = await fetch(`${API_URL}juegos`, {
+  headers: {
+    "Authorization": "Basic " + btoa(`${USER}:${API_KEY}`),
+  },
+});
+
+const juegosData = await juegos.json();
+
 
 let equiposTop = equipos.sort((a: any, b: any) => {return (b.ligasGanadas+b.torneosGanados) - (a.ligasGanadas+a.torneosGanados);});
+
+equiposTop = equiposTop.map((equipo: any) => {
+  return {
+	nombre: equipo.nombre.toUpperCase(),
+	urlFoto: equipo.urlFoto || "/assets/img/equipo-default.png",
+	atributo1: equipo.ligasGanadas || 0,
+	atributo2: equipo.torneosGanados || 0,
+  };
+});
+
 equiposTop = equiposTop.slice(0, 3);
 ---
 
 <Layout titulo="Equipos" descripcion="Descubre a tus equipos favoritos en cada partido">
-  <Top titulo="🏆 TOP MEJORES EQUIPOS" top={equiposTop} atributo1="Ligas ganadas: " atributo2="Torneos ganados: "/>
-
+  <Top titulo="🏆 TOP MEJORES EQUIPOS" top={equiposTop} atributo1=`🥇 Ligas ganadas: ` atributo2=`🏆 Torneos ganados: `/>
 
   <div class="max-w-6xl mx-auto px-4 py-10 text-center">
 
     <hr class="border-t-2 border-terciario my-20"/>
 
     <div class="flex gap-6 items-center justify-center">
-      <form class="flex flex-row items-center mt-10 mb-6 gap-6 flex-wrap justify-center">
+      <form id="formFiltrado" class="flex flex-row items-center mt-10 mb-6 gap-6 flex-wrap justify-center">
 
         <div>
           <label class="block mb-2 text-left text-sm font-medium text-texto-secundario">Ordenar por:</label>
-          <select class="w-full max-w-md p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6">
+          <select name="ordenarPor" class="w-full max-w-md p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6">
             <option class="text-texto-secundario" value="">Selecciona una opción</option>
             <option class="text-texto-secundario" value="nombre">Nombre</option>
-            <option class="text-texto-secundario" value="ligasGanadas">Ligas ganadas</option>
-            <option class="text-texto-secundario" value="torneosGanados">Torneos ganados</option>
+            <option class="text-texto-secundario" value="ligas_ganadas">Ligas ganadas</option>
+            <option class="text-texto-secundario" value="torneos_ganados">Torneos ganados</option>
+            <option class="text-texto-secundario" value="ligas_jugadas">Ligas jugadas</option>
+            <option class="text-texto-secundario" value="torneos_jugados">Torneos jugados</option>
           </select>
         </div>
 
         <div>
           <label class="block mb-2 text-left text-sm font-medium text-texto-secundario">Tipo de deporte:</label>
-          <select class="w-full max-w-md p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6">
+          <select name="tipoDeporte" class="w-full max-w-md p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6">
             <option class="text-texto-secundario" value="">Selecciona una opción</option>
+            {
+              juegosData.map((juego: any) => {
+                return <option class="text-texto-secundario" value={juego.id}>{juego.nombre}</option>
+              })
+            }
           </select>
         </div>
-
+ 
         <input type="submit" value="Filtrar" class="px-4 py-2 bg-terciario text-white rounded-lg hover:bg-blue-700 transition duration-200"/>
       </form>
 
-      <form class="flex flex-row items-center mt-10 mb-6 gap-6 justify-center">
-        <input type="text" placeholder="Buscar equipo..." class="w-full max-w-md p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+      <form id="busqueda" class="flex flex-row items-center mt-10 mb-6 gap-6 justify-center">
+        <input type="text" name="buscar" placeholder="Buscar equipo..." class="w-full max-w-md p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
         <input type="submit" class="px-4 py-2 h-max bg-terciario text-white rounded-lg hover:bg-blue-700 transition duration-200"></input>
       </form>
 
     </div>
 
-    <did class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 items-start">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 items-start" id="resultados">
       {equipos.map((equipo: any) => {
         return <div class="w-full max-w-sm mx-auto bg-gradient-to-t from-slate-950 to-slate-800 rounded-2xl shadow-md hover:shadow-lg transition duration-300 p-6 flex flex-col items-center">
           <img transition:name={`img-${equipo.nombre}`} class="w-60 h-auto object-contain mb-4" src={equipo.urlFoto} alt={equipo.nombre}/>
@@ -68,4 +95,98 @@ equiposTop = equiposTop.slice(0, 3);
   </div>
 </Layout>
 
-<script></script>
+<script>
+    const form = document.getElementById('busqueda') as HTMLFormElement;
+    const formFiltrado = document.getElementById('formFiltrado') as HTMLFormElement;
+    const resultados = document.getElementById('resultados') as HTMLDivElement;
+
+    const imprimirResultados = (equipos:any) => {
+
+      if (!equipos || equipos.length === 0) {
+        resultados.innerHTML = '<p class="text-texto-primario text-center col-start-2">No se encontraron ningun equipo.</p>';
+        return;
+      }
+
+      resultados.innerHTML = '';
+
+      equipos.map((equipo: any) => {
+        const div = document.createElement('div');
+        div.className = 'w-full max-w-sm mx-auto bg-gradient-to-t from-slate-950 to-slate-800 rounded-2xl shadow-md hover:shadow-lg transition duration-300 p-6 flex flex-col items-center';
+        div.innerHTML = `
+          <img class="w-60 h-auto object-contain mb-4" src="${equipo.urlFoto}" alt="${equipo.nombre}"/>
+          <h3 class="text-lg font-bold mb-2 text-primario">${equipo.nombre}</h3>
+          <p class="text-sm text-texto-primario">🥇 <strong>Ligas ganadas:</strong> ${equipo.ligasGanadas}</p>
+          <p class="text-sm text-texto-primario">🏆 <strong>Torneos ganados:</strong> ${equipo.torneosGanados}</p>
+          <a href="/equipo_${equipo.nombre}" class="mt-2 px-4 py-1 h-max bg-terciario text-white rounded-lg hover:bg-blue-700 transition duration-200">Ver más</a>
+        `;
+        resultados.appendChild(div);
+      });
+    }
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const botonBuscar = document.querySelector('input[type="submit"]') as HTMLInputElement;
+      botonBuscar.disabled = true;
+
+      resultados.innerHTML = '<p class="text-texto-primario text-center col-start-2">Buscando.... ⏳</p>';
+
+      const datos = new FormData(form);
+      const objetoForm = Object.fromEntries(datos.entries());
+
+      if (!objetoForm.buscar) {
+        resultados.innerHTML = '<p class="col-start-2 text-texto-primario text-center">Por favor, ingresa un nombre de equipo o al menos una letra para realizar la busqueda.</p>';
+        return;
+      }
+  
+      const response = await fetch(`/api/equipos?buscar=${objetoForm.buscar}`, {
+        method: 'GET',
+        headers: {
+          "Content-Type": "application/json"
+        }
+      });
+
+      if (!response.ok) {
+        resultados.innerHTML = '<p class="text-texto-primario text-center col-start-2">Error al buscar equipos. Por favor, intenta de nuevo más tarde.</p>';
+        botonBuscar.disabled = false;
+        return;
+      }
+
+      const equipos = await response.json();
+
+      imprimirResultados(equipos);
+      botonBuscar.disabled = false;
+    });
+
+    formFiltrado.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const botonFiltrar = document.querySelector('input[type="submit"]') as HTMLInputElement;
+      botonFiltrar.disabled = true;
+      
+      resultados.innerHTML = '<p class="text-texto-primario text-center col-start-2">Filtrando.... ⏳</p>';
+
+      const datos = new FormData(formFiltrado);
+      const objetoForm = Object.fromEntries(datos.entries());
+
+      if (!objetoForm.ordenarPor) {
+        objetoForm.ordenarPor = 'nombre';
+      }
+
+      if (!objetoForm.tipoDeporte) {
+        objetoForm.tipoDeporte = 'todos';
+      }
+
+      const response = await fetch(`/api/equipos?ordenarPor=${objetoForm.ordenarPor}&&tipoDeporte=${objetoForm.tipoDeporte}`, {
+        method: 'GET',
+        headers: {
+          "Content-Type": "application/json"
+        }
+      });
+
+      const equipos = await response.json();
+
+      imprimirResultados(equipos);
+      botonFiltrar.disabled = false;
+    });
+</script>

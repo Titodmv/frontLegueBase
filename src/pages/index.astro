@@ -2,19 +2,55 @@
 import Layout from "../layouts/Layout.astro"
 import Top from "../components/Top.astro"
 import "../styles/global.css"
+import { API_URL } from "astro:env/server"
+import { API_KEY } from "astro:env/server";
+import { USER } from "astro:env/server";
 
-const response = await fetch("http://localhost:8080/api/equipos", {
+//Para equipos Top
+const response = await fetch(`${API_URL}equipos`, {
   headers: {
-    "Authorization": "Basic " + btoa("leaguebase:leaguebase"),
+    "Authorization": "Basic " + btoa(`${USER}:${API_KEY}`),
   },
 });
 
 const equipos = await response.json();
 
-
 let equiposTop = equipos.sort((a: any, b: any) => {return (b.ligasGanadas+b.torneosGanados) - (a.ligasGanadas+a.torneosGanados);});
+
+equiposTop = equiposTop.map((equipo: any) => {
+  return {
+	nombre: equipo.nombre.toUpperCase(),
+	urlFoto: equipo.urlFoto || "/assets/img/equipo-default.png",
+	atributo1: equipo.ligasGanadas || 0,
+	atributo2: equipo.torneosGanados || 0,
+  };
+});
+
 equiposTop = equiposTop.slice(0, 3);
 
+// Para jugadores Top
+
+const response2 = await fetch(`${API_URL}jugadores/con-equipo`, {
+  headers: {
+    "Authorization": "Basic " + btoa(`${USER}:${API_KEY}`),
+  },
+});
+
+const jugadores = await response2.json();
+
+let jugadoresTop = jugadores.sort((a: any, b: any) => {return b.valorEstadisticaPrincipal - a.valorEstadisticaPrincipal;});
+
+//aqui se pasa los jugadoresTop a un array de objetos con los atributos necesarios para el top
+jugadoresTop = jugadoresTop.map((jugadorTop: any) => {
+  return {
+    nombre: jugadorTop.nickname.toUpperCase(),
+    urlFoto: "/assets/img/usuario.png",
+    atributo1: jugadorTop.nombreEquipo,
+    atributo2: jugadorTop.nombreEstadisticaPrincipal+": "+jugadorTop.valorEstadisticaPrincipal,
+  };
+});
+
+jugadoresTop = jugadoresTop.slice(0, 3);
 ---
 
 <Layout titulo="Inicio" descripcion="Bienvenido a League Base. Crea un torneo en minutos, sin registro.">
@@ -30,5 +66,6 @@ equiposTop = equiposTop.slice(0, 3);
 			<img class="m-auto xl:h-[90vh] lg:h-[80vh] md:h-[60vh] h-[40vh] max-w-fit" src="/assets/img/portada2.png" alt="Imagen portada de LeagueBase">
 		</section>
 	</main>
-  <Top titulo="🏆 TOP MEJORES EQUIPOS" top={equiposTop} atributo1="Ligas ganadas: " atributo2="Torneos ganados: "/>
+  <Top titulo="🏆 TOP MEJORES EQUIPOS" top={equiposTop} atributo1=`🥇 Ligas ganadas: ` atributo2=`🏆 Torneos ganados: `/>
+  <Top titulo="🏆 TOP MEJORES JUGADORES" top={jugadoresTop} atributo1=`EQUIPO: ` atributo2=``/>
 </Layout>

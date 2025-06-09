@@ -5,11 +5,7 @@ import "../styles/global.css";
 
 // Obtener rutas estáticas
 export async function getStaticPaths() {
-  const response = await fetch(`${API_URL}equipos`, {
-    headers: {
-      Authorization: "Basic " + btoa("leaguebase:leaguebase"),
-    },
-  });
+  const response = await fetch(`${API_URL}equipos`);
 
   const equipos = await response.json();
 

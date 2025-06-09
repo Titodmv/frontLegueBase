@@ -1,7 +1,5 @@
 import type { APIRoute } from "astro";
 import { API_URL } from "astro:env/server";
-import { API_KEY } from "astro:env/server"
-import { USER } from "astro:env/server"
 
 export const GET: APIRoute = async ({ request }) => {
 
@@ -9,11 +7,7 @@ export const GET: APIRoute = async ({ request }) => {
         try {
             const buscar = new URL(request.url).searchParams.get("buscar");
 
-            const response = await fetch(`${API_URL}equipos/buscar_nombre/${buscar}`, {
-                headers: {
-                "Authorization": "Basic " + btoa(`${USER}:${API_KEY}`),
-                }
-            });
+            const response = await fetch(`${API_URL}equipo/buscar_nombre/${buscar}`);
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -34,14 +28,9 @@ export const GET: APIRoute = async ({ request }) => {
     else if (new URL(request.url).searchParams.get("ordenarPor") !== null && new URL(request.url).searchParams.get("tipoDeporte") !== null) {
         try {
             const ordenarPor = new URL(request.url).searchParams.get("ordenarPor");
-            const tipoDeporte = new URL(request.url).searchParams.get("tipoDeporte");
+            const juegoID = new URL(request.url).searchParams.get("tipoDeporte");
 
-            const response = await fetch(`${API_URL}equipos/filtrar/${ordenarPor}/${tipoDeporte}`, {
-                headers: {
-                "Authorization": "Basic " + btoa(`${USER}:${API_KEY}`),
-                }
-            });
-
+            const response = await fetch(`${API_URL}equipos/filtrar/${ordenarPor}/${juegoID}`);
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -62,11 +51,7 @@ export const GET: APIRoute = async ({ request }) => {
     }
     else {
         try {
-            const response = await fetch(`${API_URL}equipos`, {
-                headers: {
-                "Authorization": "Basic " + btoa(`${USER}:${API_KEY}`),
-                }
-            });
+            const response = await fetch(`${API_URL}equipos`);
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);

@@ -3,15 +3,9 @@ import Layout from "../layouts/Layout.astro"
 import Top from "../components/Top.astro"
 import "../styles/global.css"
 import { API_URL } from "astro:env/server"
-import { API_KEY } from "astro:env/server";
-import { USER } from "astro:env/server";
 
 //Para equipos Top
-const response = await fetch(`${API_URL}equipos`, {
-  headers: {
-    "Authorization": "Basic " + btoa(`${USER}:${API_KEY}`),
-  },
-});
+const response = await fetch(`${API_URL}equipos`);
 
 const equipos = await response.json();
 
@@ -30,11 +24,7 @@ equiposTop = equiposTop.slice(0, 3);
 
 // Para jugadores Top
 
-const response2 = await fetch(`${API_URL}jugadores/con-equipo`, {
-  headers: {
-    "Authorization": "Basic " + btoa(`${USER}:${API_KEY}`),
-  },
-});
+const response2 = await fetch(`${API_URL}jugadores`);
 
 const jugadores = await response2.json();
 

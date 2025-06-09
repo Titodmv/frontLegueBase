@@ -1,8 +1,62 @@
 ---
 import Layout from "../layouts/Layout.astro"
+import { API_URL } from "astro:env/server"
 import "../styles/global.css"
+
+const response = await fetch(`${API_URL}ligas`);
+
+const ligas = await response.json();
+
+const juegos = await fetch(`${API_URL}juegos`);
+
+const juegosData = await juegos.json();
 ---
 
 <Layout titulo="Ligas" descripcion="Descubre y sigue tus ligas favoritas, mira sus estadisticas y puntuaciones">
-    
+  <div class="max-w-6xl mx-auto px-4 py-10 text-center">
+    <div class="flex gap-6 items-center justify-center">
+      <form id="formFiltrado" class="flex flex-row items-center mt-10 mb-6 gap-6 flex-wrap justify-center">
+
+        <div>
+          <label class="block mb-2 text-left text-sm font-medium text-texto-secundario">Ordenar por:</label>
+          <select name="ordenarPor" class="w-full max-w-md p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6">
+            <option class="text-texto-secundario" value="">Selecciona una opción</option>
+            <option class="text-texto-secundario" value="nombre">Nombre</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block mb-2 text-left text-sm font-medium text-texto-secundario">Tipo de deporte:</label>
+          <select name="tipoDeporte" class="w-full max-w-md p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6">
+            <option class="text-texto-secundario" value="">Selecciona una opción</option>
+            {
+              juegosData.map((juego: any) => {
+                return <option class="text-texto-secundario" value={juego.id}>{juego.nombre}</option>
+              })
+            }
+          </select>
+        </div>
+ 
+        <input type="submit" value="Filtrar" class="px-4 py-2 bg-terciario text-white rounded-lg hover:bg-blue-700 transition duration-200"/>
+      </form>
+
+      <form id="busqueda" class="flex flex-row items-center mt-10 mb-6 gap-6 justify-center">
+        <input type="text" name="buscar" placeholder="Buscar equipo..." class="w-full max-w-md p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        <input type="submit" class="px-4 py-2 h-max bg-terciario text-white rounded-lg hover:bg-blue-700 transition duration-200"></input>
+      </form>
+
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 items-start" id="resultados">
+      {ligas.map((equipo: any) => {
+        return <div class="w-full max-w-sm mx-auto bg-gradient-to-t from-slate-950 to-slate-800 rounded-2xl shadow-md hover:shadow-lg transition duration-300 p-6 flex flex-col items-center">
+          <img transition:name={`img-${equipo.nombre}`} class="w-60 h-auto object-contain mb-4" src={equipo.urlFoto} alt={equipo.nombre}/>
+          <h3 class="text-lg font-bold mb-2 text-primario">{equipo.nombre}</h3>
+          <p class="text-sm text-texto-primario">🥇 <strong>Ligas ganadas:</strong> {equipo.ligasGanadas}</p>
+          <p class="text-sm text-texto-primario">🏆 <strong>Torneos ganados:</strong> {equipo.torneosGanados}</p>
+          <a href={`/equipo_${equipo.nombre}`} class="mt-2 px-4 py-1 h-max bg-terciario text-white rounded-lg hover:bg-blue-700 transition duration-200">Ver más</a>
+        </div>
+      })}
+    </div>
+  </div>
 </Layout>

@@ -2,23 +2,13 @@
 import Layout from "../layouts/Layout.astro"
 import Top from "../components/Top.astro"
 import { API_URL } from "astro:env/server"
-import { API_KEY } from "astro:env/server"
-import { USER } from "astro:env/server"
 import "../styles/global.css"
 
-const response = await fetch(`${API_URL}equipos`, {
-  headers: {
-    "Authorization": "Basic " + btoa(`${USER}:${API_KEY}`),
-  },
-});
+const response = await fetch(`${API_URL}equipos`);
 
 const equipos = await response.json();
 
-const juegos = await fetch(`${API_URL}juegos`, {
-  headers: {
-    "Authorization": "Basic " + btoa(`${USER}:${API_KEY}`),
-  },
-});
+const juegos = await fetch(`${API_URL}juegos`);
 
 const juegosData = await juegos.json();
 

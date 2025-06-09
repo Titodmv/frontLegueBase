@@ -6,11 +6,7 @@ import { API_KEY } from "astro:env/server"
 import { USER } from "astro:env/server"
 import "../styles/global.css"
 
-const response = await fetch(`${API_URL}jugadores/con-equipo`, {
-  headers: {
-    "Authorization": "Basic " + btoa(`${USER}:${API_KEY}`),
-  },
-});
+const response = await fetch(`${API_URL}jugadores`);
 
 const jugadores = await response.json();
 
@@ -26,11 +22,7 @@ jugadoresTop = jugadoresTop.map((jugadorTop: any) => {
   };
 });
 
-const juegos = await fetch(`${API_URL}juegos`, {
-  headers: {
-    "Authorization": "Basic " + btoa(`${USER}:${API_KEY}`),
-  },
-});
+const juegos = await fetch(`${API_URL}juegos`);
 
 const juegosData = await juegos.json();
 
@@ -87,107 +79,11 @@ jugadoresTop = jugadoresTop.slice(0, 3);
         return <div class="w-full max-w-sm mx-auto bg-gradient-to-t from-slate-950 to-slate-800 rounded-2xl shadow-md hover:shadow-lg transition duration-300 p-6 flex flex-col items-center">
           <img transition:name={`img-${jugador.nickname}`} class="w-60 h-auto object-contain mb-4" src="/assets/img/usuario.png" alt={jugador.nickname}/>
           <h3 class="text-lg font-bold mb-2 text-primario">{jugador.nickname.toUpperCase()}</h3>
-          <p class="text-sm text-texto-primario">🥇 <strong>Equipo: </strong> {jugador.nombreEquipo}</p>
-          <p class="text-sm text-texto-primario">🏆 <strong>{jugador.nombreEstadisticaPrincipal}:</strong> {jugador.valorEstadisticaPrincipal}</p>
+          <!--<p class="text-sm text-texto-primario">🥇 <strong>Equipo: </strong> {jugador.nombreEquipo}</p>
+          <p class="text-sm text-texto-primario">🏆 <strong>{jugador.nombreEstadisticaPrincipal}:</strong> {jugador.valorEstadisticaPrincipal}</p> -->
           <a href={`/jugador_${jugador.nickname}`} class="mt-2 px-4 py-1 h-max bg-terciario text-white rounded-lg hover:bg-blue-700 transition duration-200">Ver más</a>
         </div>
       })}
     </div>
   </div>
 </Layout>
-
-<script>
-    const form = document.getElementById('busqueda') as HTMLFormElement;
-    const formFiltrado = document.getElementById('formFiltrado') as HTMLFormElement;
-    const resultados = document.getElementById('resultados') as HTMLDivElement;
-
-    const imprimirResultados = (equipos:any) => {
-
-      if (!equipos || equipos.length === 0) {
-        resultados.innerHTML = '<p class="text-texto-primario text-center col-start-2">No se encontraron ningun equipo.</p>';
-        return;
-      }
-
-      resultados.innerHTML = '';
-
-      equipos.map((equipo: any) => {
-        const div = document.createElement('div');
-        div.className = 'w-full max-w-sm mx-auto bg-gradient-to-t from-slate-950 to-slate-800 rounded-2xl shadow-md hover:shadow-lg transition duration-300 p-6 flex flex-col items-center';
-        div.innerHTML = `
-          <img class="w-60 h-auto object-contain mb-4" src="${equipo.urlFoto}" alt="${equipo.nombre}"/>
-          <h3 class="text-lg font-bold mb-2 text-primario">${equipo.nombre}</h3>
-          <p class="text-sm text-texto-primario">🥇 <strong>Ligas ganadas:</strong> ${equipo.ligasGanadas}</p>
-          <p class="text-sm text-texto-primario">🏆 <strong>Torneos ganados:</strong> ${equipo.torneosGanados}</p>
-          <a href="/equipo_${equipo.nombre}" class="mt-2 px-4 py-1 h-max bg-terciario text-white rounded-lg hover:bg-blue-700 transition duration-200">Ver más</a>
-        `;
-        resultados.appendChild(div);
-      });
-    }
-
-    form.addEventListener('submit', async (event) => {
-      event.preventDefault();
-
-      const botonBuscar = document.querySelector('input[type="submit"]') as HTMLInputElement;
-      botonBuscar.disabled = true;
-
-      resultados.innerHTML = '<p class="text-texto-primario text-center col-start-2">Buscando.... ⏳</p>';
-
-      const datos = new FormData(form);
-      const objetoForm = Object.fromEntries(datos.entries());
-
-      if (!objetoForm.buscar) {
-        resultados.innerHTML = '<p class="col-start-2 text-texto-primario text-center">Por favor, ingresa un nombre de equipo o al menos una letra para realizar la busqueda.</p>';
-        return;
-      }
-  
-      const response = await fetch(`/api/equipos?buscar=${objetoForm.buscar}`, {
-        method: 'GET',
-        headers: {
-          "Content-Type": "application/json"
-        }
-      });
-
-      if (!response.ok) {
-        resultados.innerHTML = '<p class="text-texto-primario text-center col-start-2">Error al buscar equipos. Por favor, intenta de nuevo más tarde.</p>';
-        botonBuscar.disabled = false;
-        return;
-      }
-
-      const equipos = await response.json();
-
-      imprimirResultados(equipos);
-      botonBuscar.disabled = false;
-    });
-
-    formFiltrado.addEventListener('submit', async (event) => {
-      event.preventDefault();
-
-      const botonFiltrar = document.querySelector('input[type="submit"]') as HTMLInputElement;
-      botonFiltrar.disabled = true;
-      
-      resultados.innerHTML = '<p class="text-texto-primario text-center col-start-2">Filtrando.... ⏳</p>';
-
-      const datos = new FormData(formFiltrado);
-      const objetoForm = Object.fromEntries(datos.entries());
-
-      if (!objetoForm.ordenarPor) {
-        objetoForm.ordenarPor = 'nombre';
-      }
-
-      if (!objetoForm.tipoDeporte) {
-        objetoForm.tipoDeporte = 'todos';
-      }
-
-      const response = await fetch(`/api/equipos?ordenarPor=${objetoForm.ordenarPor}&&tipoDeporte=${objetoForm.tipoDeporte}`, {
-        method: 'GET',
-        headers: {
-          "Content-Type": "application/json"
-        }
-      });
-
-      const equipos = await response.json();
-
-      imprimirResultados(equipos);
-      botonFiltrar.disabled = false;
-    });
-</script>

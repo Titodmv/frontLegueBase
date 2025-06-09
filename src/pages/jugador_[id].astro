@@ -7,11 +7,7 @@ import { USER } from "astro:env/server";
 
 // Obtener rutas estáticas
 export async function getStaticPaths() {
-  const response = await fetch(`${API_URL}jugadores/con-equipo`, {
-    headers: {
-      Authorization: "Basic " + btoa(`${USER}:${API_KEY}`),
-    },
-  });
+  const response = await fetch(`${API_URL}jugadores`);
 
   const jugadores = await response.json();
 

@@ -1,5 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro"
+import { API_URL, API_KEY } from 'astro:env/server';
 import "../styles/global.css"
 
 const cookies = Astro.cookies
@@ -8,71 +9,141 @@ const token = cookies.get('token')?.value
 if (!token) {
   return Astro.redirect('/login')
 }
+
+const res = await fetch(`${API_URL}usuario`, {
+  headers: {
+    'Authorization': `Bearer ${token}`,
+    'x-api-key': API_KEY,
+  }
+})
+
+if (!res.ok) {
+  return Astro.redirect('/login')
+}
+
+const datosUsuario = await res.json()
 ---
 
 <Layout titulo="Usuario" descripcion="Página de usuario">
-   <main>
-    <section class=" text-primario px-4 pt-16 flex items-center justify-center">
-        <div class="w-full max-w-2xl bg-linear-to-t from-slate-950 to-slate-900 rounded-2xl shadow-2xl p-8">
-            <h1 class="text-2xl font-bold text-white mb-8 border-b border-white/10 pb-4">👤 Mi Perfil</h1>
-
-            <div class="grid gap-6">
-                <div class="flex flex-col">
-                    <span class="text-sm text-gray-400">Nombre</span>
-                    <span class="text-lg font-medium text-white">Nombre</span>
-                </div>
-
-                <div class="flex flex-col">
-                    <span class="text-sm text-gray-400">Correo electrónico</span>
-                    <span class="text-lg font-medium text-white">correo@electronico.com</span>
-                </div>
-
-                <div class="flex flex-col">
-                    <span class="text-sm text-gray-400">Rol</span>
-                    <span class="text-lg font-medium text-white">Usuario</span>
-                </div>
-
-                <div class="flex flex-col">
-                    <span class="text-sm text-gray-400">Usuario desde</span>
-                    <span class="text-lg font-medium text-white">20 de Febrero de 2004</span>
-                </div>
-            </div>
-
-            <div class="mt-10 pt-6 border-t border-white/10">
-            <h2 class="text-xl font-semibold text-white mb-4">🔐 Cambiar Contraseña</h2>
-            <form class="grid gap-4">
-                <input type="password" name="contraseña_actual" placeholder="Contraseña actual" class="bg-[#334155] rounded-xl px-4 py-2 text-white placeholder-gray-400 focus:ring-2 focus:ring-[#4C5FD5] outline-none" />
-                <input type="password" name="contraseña_nueva" placeholder="Nueva contraseña" class="bg-[#334155] rounded-xl px-4 py-2 text-white placeholder-gray-400 focus:ring-2 focus:ring-[#4C5FD5] outline-none" />
-                <input type="password" name="contraseña_repetida" placeholder="Confirmar nueva contraseña" class="bg-[#334155] rounded-xl px-4 py-2 text-white placeholder-gray-400 focus:ring-2 focus:ring-[#4C5FD5] outline-none" />
-                <input type="submit" class="bg-[#4C5FD5] hover:bg-[#3b4bbc] transition-all text-white px-6 py-3 rounded-xl font-semibold mt-2" value="Guardar Contraseña"></input>
-            </form>
-            </div>
+  <main>
+    <section class="text-primario px-4 pt-16 flex items-center justify-center mb-5">
+      <div class="w-full max-w-2xl bg-gradient-to-t from-slate-950 to-slate-900 rounded-2xl shadow-2xl p-8">
+        <div class="flex justify-between items-center mb-8 border-b border-white/10 pb-4">
+          <h1 class="text-2xl font-bold text-white">👤 Mi Perfil</h1>
+          <a href="/api/logout" class="text-sm text-red-400 hover:underline">Cerrar sesión</a>
         </div>
+
+        <div class="grid gap-6">
+          <div class="flex flex-col">
+            <span class="text-sm text-gray-400">Nombre</span>
+            <span class="text-lg font-medium text-white">
+              {datosUsuario.nombre ?? "Sin nombre"}
+            </span>
+          </div>
+
+          <div class="flex flex-col">
+            <span class="text-sm text-gray-400">Correo electrónico</span>
+            <span class="text-lg font-medium text-white">{datosUsuario.email}</span>
+          </div>
+
+          <div class="flex flex-col">
+            <span class="text-sm text-gray-400">Rol</span>
+            <span class="text-lg font-medium text-white">{datosUsuario.rol}</span>
+          </div>
+
+          <div class="flex flex-col">
+            <span class="text-sm text-gray-400">Usuario desde</span>
+            <span class="text-lg font-medium text-white">
+              {new Date(datosUsuario.fecha_registro).toLocaleDateString('es-ES', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+              })}
+            </span>
+          </div>
+        </div>
+
+        <div class="mt-10 pt-6 border-t border-white/10">
+          <details class="mb-4">
+            <summary class="text-lg font-semibold text-white cursor-pointer">📌 Seguimientos</summary>
+            <div class="mt-4 grid gap-6">
+              <div>
+                <h3 class="text-sm text-gray-400 mb-1">🏟️ Equipos</h3>
+                {
+                  datosUsuario.equipos.length > 0
+                    ? datosUsuario.equipos.map((e: { nombre: string }) => (
+                        <div class="text-white">{e.nombre}</div>
+                      ))
+                    : <div class="text-gray-500 italic">Vaya, aún no sigues a ningún equipo.</div>
+                }
+              </div>
+
+              <div>
+                <h3 class="text-sm text-gray-400 mb-1">🎮 Jugadores</h3>
+                {
+                  datosUsuario.jugadores.length > 0
+                    ? datosUsuario.jugadores.map((j: { nickname: string }) => (
+                        <div class="text-white">{j.nickname}</div>
+                      ))
+                    : <div class="text-gray-500 italic">Vaya, aún no sigues a ningún jugador.</div>
+                }
+              </div>
+
+              <div>
+                <h3 class="text-sm text-gray-400 mb-1">📅 Eventos</h3>
+                {
+                  datosUsuario.eventos.length > 0
+                    ? datosUsuario.eventos.map((ev: any) => (
+                        <div class="text-white">{ev.nombre}</div>
+                      ))
+                    : <div class="text-gray-500 italic">Vaya, aún no sigues a ningún evento.</div>
+                }
+              </div>
+            </div>
+          </details>
+        </div>
+
+        <div class="mt-10 pt-6 border-t border-white/10">
+          <h2 class="text-xl font-semibold text-white mb-4">🔐 Cambiar Contraseña</h2>
+          <form class="grid gap-4">
+            <input type="password" name="contraseña_actual" placeholder="Contraseña actual" class="bg-[#334155] rounded-xl px-4 py-2 text-white placeholder-gray-400 focus:ring-2 focus:ring-[#4C5FD5] outline-none" />
+            <input type="password" name="contraseña_nueva" placeholder="Nueva contraseña" class="bg-[#334155] rounded-xl px-4 py-2 text-white placeholder-gray-400 focus:ring-2 focus:ring-[#4C5FD5] outline-none" />
+            <input type="password" name="contraseña_repetida" placeholder="Confirmar nueva contraseña" class="bg-[#334155] rounded-xl px-4 py-2 text-white placeholder-gray-400 focus:ring-2 focus:ring-[#4C5FD5] outline-none" />
+            <input type="submit" class="bg-[#4C5FD5] hover:bg-[#3b4bbc] transition-all text-white px-6 py-3 rounded-xl font-semibold mt-2" value="Guardar Contraseña" />
+          </form>
+        </div>
+      </div>
     </section>
-   </main>
+  </main>
 </Layout>
 
 <script>
-    window.addEventListener('DOMContentLoaded', function() {
-        const form = document.querySelector('form') as HTMLFormElement;
-        const boton = document.querySelector('input[type="submit"]') as HTMLInputElement;
+  window.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form') as HTMLFormElement;
+    const boton = document.querySelector('input[type="submit"]') as HTMLInputElement;
 
-        form.addEventListener('submit', async (event) => {
-            event.preventDefault();
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      boton.disabled = true;
 
-            boton.disabled = true;
-            const datosFormulario = new FormData(form);
-            const objetoFormulario = Object.fromEntries(datosFormulario.entries());
+      const datosFormulario = new FormData(form);
+      const objetoFormulario = Object.fromEntries(datosFormulario.entries());
 
-            if (objetoFormulario.contraseña_nueva != objetoFormulario.contraseña_repetida) {
-                alert("La nueva contraseña no coincide, Porfavor introduce dos veces la nueva contraseña");
-            }else {
-                await fetch ('/cambiar_contaseña', {
+      if (objetoFormulario.contraseña_nueva !== objetoFormulario.contraseña_repetida) {
+        alert("La nueva contraseña no coincide. Por favor, introduce dos veces la nueva contraseña.");
+        boton.disabled = false;
+        return;
+      }
 
-                })
-            }
+      await fetch('/cambiar_contaseña', {
+        method: 'POST',
+        body: JSON.stringify(objetoFormulario),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
 
-            boton.disabled = false;
-        })
-    })
+      boton.disabled = false;
+    });
+  });
 </script>

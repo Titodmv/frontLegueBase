@@ -4,82 +4,111 @@ import "../styles/global.css"
 ---
 
 <Layout titulo="Inicio" descripcion="Bienvenido a League Base. Crea un torneo en minutos, sin registro.">
-    <main class="flex flex-col md:flex-row items-center justify-evenly gap-10">
-        <div class="flex flex-col items-center justify-center shadow-sm bg-linear-to-t from-slate-950 to-slate-900 rounded-2xl pt-4 w-10/12 lg:w-5/12 my-10">
-            <h1 class="text-3xl">Crear Torneo o Liga</h1>
-            <form class="p-8 w-full max-w-[600px]">        
-                <label for="nombre" class="text-primario">Nombre del torneo o liga</label>
-                <input type="text" id="nombre" name="nombre" class="pl-2 mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring transition-all focus:ring-blue-500 mb-8" autocomplete="name" required />
-                
-                <label for="tipo">Tipo</label>
-                <select id="tipo" name="tipo" class="pl-2 mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring transition-all focus:ring-blue-500 mb-8">
-                    <option value="liga" class="text-black">Liga</option>
-                    <option value="torneo" class="text-black">Torneo</option>
-                </select>
+  <main class="flex flex-col md:flex-row items-center justify-evenly gap-10">
+    <div class="flex flex-col items-center justify-center shadow-sm bg-linear-to-t from-slate-950 to-slate-900 rounded-2xl pt-4 w-10/12 lg:w-5/12 my-10">
+      <h1 class="text-3xl">Crear Torneo o Liga</h1>
+      <form class="p-8 w-full max-w-[600px]" enctype="multipart/form-data">
+  <label for="nombre" class="text-primario">Nombre del torneo o liga</label>
+  <input type="text" id="nombre" name="nombre" class="pl-2 mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring transition-all focus:ring-blue-500 mb-8" required />
 
-                <div class="flex gap-4 md:flex-row flex-col">
-                    <div>
-                        <label for="fecha_inicio">Fecha de inicio del torneo</label>
-                        <input type="date" name="fecha_inicio" id="fecha_inicio" class="pl-2 mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring transition-all focus:ring-blue-500 mb-8" required />
-                    </div>
+  <label for="tipo">Tipo</label>
+  <select id="tipo" name="tipo" class="pl-2 mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring transition-all focus:ring-blue-500 mb-8" required>
+    <option value="liga" class="text-black">Liga</option>
+    <option value="torneo" class="text-black">Torneo</option>
+  </select>
 
-                    <div>
-                        <label for="fecha_fin">Fecha de fin del torneo</label>
-                        <input type="date" name="fecha_fin" id="fecha_fin" class="pl-2 mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring transition-all focus:ring-blue-500 mb-8" required />
-                    </div>
-                </div>
+  <label for="tipoJuegoId">Tipo de deporte</label>
+  <select id="tipoJuegoId" name="tipoJuegoId" class="pl-2 mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring transition-all focus:ring-blue-500 mb-8" required>
+    <option value="">Selecciona un juego</option>
+    <option value="1">Fútbol</option>
+    <option value="2">Valorant</option>
+    <!-- Cargar dinámicamente con fetch si quieres -->
+  </select>
 
-                <label for="logo">Logo del torneo</label>
-                <input type="file" id="logo" name="logo" class="pl-2 mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring transition-all focus:ring-blue-500 mb-8" accept="image/*" required />
+  <div class="flex gap-4 md:flex-row flex-col">
+    <div>
+      <label for="fecha_inicio">Fecha de inicio</label>
+      <input type="date" name="fechaInicio" id="fecha_inicio" class="pl-2 mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring transition-all focus:ring-blue-500 mb-8" required />
+    </div>
 
-                <label for="jugadores_equipo">Minimo de jugadores por equipo</label>
-                <input type="number" id="jugadores_equipo" name="jugadores_equipo" class="pl-2 mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring transition-all focus:ring-blue-500 mb-8" min="1" max="25" value="1" required />
+    <div>
+      <label for="fecha_fin">Fecha de fin</label>
+      <input type="date" name="fechaFin" id="fecha_fin" class="pl-2 mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring transition-all focus:ring-blue-500 mb-8" required />
+    </div>
+  </div>
 
-                <label for="ubicacion">Ubicacion</label>
-                <input type="text" id="ubicacion" name="ubicacion" class="pl-2 mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring transition-all focus:ring-blue-500 mb-8" required />
+  <label for="imagen">Logo del torneo o liga</label>
+  <input type="file" id="imagen" name="imagen" class="pl-2 mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring transition-all focus:ring-blue-500 mb-8" accept="image/*" required />
 
-                <label for="descripcion">Descripción</label>
-                <textarea id="descripcion" name="descripcion" class="pl-2 mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring transition-all focus:ring-blue-500 mb-8" rows="4" required></textarea>
+  <label for="ubicacion">Ubicación</label>
+  <input type="text" id="ubicacion" name="ubicacion" class="pl-2 mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring transition-all focus:ring-blue-500 mb-8" required />
 
-                <input type="submit" value="Crear Torneo o Liga" class="w-full bg-blue-600 text-white px-4 py-2 rounded-md cursor-pointer hover:bg-blue-700 transition-all" />
-            </form>
-        </div>
-    </main>
+  <label for="descripcion">Descripción</label>
+  <textarea id="descripcion" name="descripcion" class="pl-2 mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring transition-all focus:ring-blue-500 mb-8" rows="4" required></textarea>
+
+  <input type="submit" value="Crear Torneo o Liga" class="w-full bg-blue-600 text-white px-4 py-2 rounded-md cursor-pointer hover:bg-blue-700 transition-all" />
+</form>
+
+    </div>
+  </main>
 </Layout>
 
 <script>
-    window.addEventListener('DOMContentLoaded', function() {
-        const form = document.querySelector('form') as HTMLFormElement;
-        const boton = document.querySelector('input[type="submit"]') as HTMLInputElement;
-        form.addEventListener('submit', async function(event) {
-            event.preventDefault();
-            
-            boton.disabled = true;
-            const datosFormulario = new FormData(form);
-            const objetoDatos = Object.fromEntries(datosFormulario.entries());
+  window.addEventListener('DOMContentLoaded', () => {
+  const form = document.querySelector('form');
+  const submitBtn = form?.querySelector('input[type="submit"]') as HTMLInputElement | null;
 
-            if (objetoDatos.fecha_inicio && objetoDatos.fecha_fin) {
-                const fechaInicio = new Date(String(objetoDatos.fecha_inicio));
-                const fechaFin = new Date(String(objetoDatos.fecha_fin));
-                const fechaActual = new Date();
+  if (!form || !submitBtn) return;
 
-                if (fechaFin < fechaActual) {
-                    alert('La fecha de fin no puede ser anterior a la fecha actual.');
-                }
+  form.addEventListener('submit', async (event: Event) => {
+    event.preventDefault();
+    submitBtn.disabled = true;
 
-                if (fechaInicio > fechaFin) {
-                    alert('La fecha de inicio debe ser anterior a la fecha de fin.');
-                }
-                if (fechaInicio < fechaActual) {
-                    alert('La fecha de inicio no puede ser anterior a la fecha actual.');
-                }
-            }
-            if (!objetoDatos.nombre || !objetoDatos.tipo || !objetoDatos.fecha_inicio || !objetoDatos.fecha_fin || !objetoDatos.logo || !objetoDatos.jugadores_equipo || !objetoDatos.ubicacion || !objetoDatos.descripcion) {
-                alert('Por favor, completa todos los campos.');
-            }
-            
-            boton.disabled = false;
-        })
+    const formData = new FormData(form);
+    const tipo = formData.get('tipo') as string;
+    const datosExtra: Record<string, any> = {};
 
-    });
+    if (tipo === 'torneo') {
+      datosExtra.formato = 'eliminación directa';
+      datosExtra.numeroFases = 3;
+    } else if (tipo === 'liga') {
+      datosExtra.sistemaIdaYVuelta = true;
+      datosExtra.puntosVictoria = 3;
+      datosExtra.puntosEmpate = 1;
+      datosExtra.puntosDerrota = 0;
+      datosExtra.criterioDesempate = 'diferencia_puntos';
+    }
+
+    formData.append('tipoEvento', tipo);
+    formData.append('datosExtra', JSON.stringify(datosExtra));
+    formData.delete('tipo'); // Eliminamos el campo original
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:3000/eventos', {
+        method: 'POST',
+        headers: {
+          'x-api-key': 'bebd33f09e35af9f84aca01518a53db658aca0153f09e35af9f8414',
+          'Authorization': `Bearer ${token || ''}`
+        },
+        body: formData
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert('Evento creado correctamente');
+        console.log(data);
+      } else {
+        alert(data.error || 'Error al crear el evento');
+      }
+    } catch (err) {
+      console.error('Error al enviar:', err);
+      alert('Error al enviar los datos');
+    } finally {
+      submitBtn.disabled = false;
+    }
+  });
+});
+
 </script>

@@ -1,8 +1,118 @@
 ---
-import Layout from "../layouts/Layout.astro"
-import "../styles/global.css"
+import Layout from "../layouts/Layout.astro";
+import "../styles/global.css";
+import { API_URL } from "astro:env/server";
+
+export async function getStaticPaths() {
+    const torneosResponse = await fetch(`${API_URL}torneos`);
+    const torneos = await torneosResponse.json();
+
+    return torneos.map((torneo: any) => ({
+        params: { id: torneo.nombre }, // slug
+        props: { torneo },
+    }));
+}
+
+const { torneo } = Astro.props;
+const { id, nombre, descripcion, url_foto, tipo_juego, fecha_inicio, fecha_fin, ubicacion, tipo_evento, estado_aprobacion, estado, aprobado_por_nombre, formato, numero_fases } = torneo;
+
+let fechaInicio = new Date(fecha_inicio);
+let fechaInicioEsp = fechaInicio.toLocaleDateString("es-ES", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+});
+
+fechaInicioEsp = fechaInicioEsp.toUpperCase();
+
+let fechaFin = new Date(fecha_fin);
+let fechaFinEsp = fechaFin.toLocaleDateString("es-ES", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+});
+
+fechaFinEsp = fechaFinEsp.toUpperCase();
+
+const seguidoresResponse = await fetch(`${API_URL}torneo/${id}/seguidores`);
+const seguidores = await seguidoresResponse.json()
+
+const { totalSeguidores } = seguidores;
+
+
+export const prerender = true;
 ---
 
-<Layout titulo="" descripcion="">
+<Layout titulo={nombre} descripcion={`El torneo ${nombre} se jugará en ${ubicacion} desde el ${fechaInicioEsp} hasta el ${fechaFinEsp}.`}>
+  <div class="max-w-4xl mx-auto px-4 py-10 text-center">
+    <img transition:name={`img-${nombre}`} class="w-48 h-48 object-cover rounded-full border-4 border-white/20 shadow-lg mx-auto mb-4" src={url_foto} alt={nombre} />
+    <h1 class="text-4xl font-extrabold text-primario mb-1">{nombre}</h1>
+    <p class="text-texto-primario text-sm mb-1">{descripcion}</p>
+
+    <div class="text-sm text-gray-400 mb-6">
+      <span class="inline-block px-3 py-1 rounded-full border border-white/10 bg-white/5 text-white text-xs font-medium">
+        {totalSeguidores === 1 ? `${totalSeguidores} Seguidor`: `${totalSeguidores} Seguidores`}
+      </span>
+    </div>
     
+    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-6 text-white mb-4">
+      <div class="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col items-center">
+        <span class="text-sm text-texto-secundario mt-1">Formato</span>
+        <span class="text-lg font-bold capitalize">{formato}</span>
+      </div>
+
+      <div class="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col items-center">
+        <span class="text-sm text-texto-secundario mt-1">N° de Fases</span>
+        <span class="text-lg font-bold">{numero_fases}</span>
+      </div>
+
+      <div class="border border-white/20 rounded-xl p-5 bg-white/5">
+        <p class="text-sm text-gray-400 uppercase mb-1">Tipo de Juego</p>
+        <p class="text-white text-lg font-semibold">{tipo_juego}</p>
+      </div>
+
+      <div class="border border-white/20 rounded-xl p-5 bg-white/5 col-span-2">
+        <p class="text-sm text-gray-400 uppercase mb-1">Ubicacion</p>
+        <p class="text-white text-lg font-semibold overflow-hidden">{ubicacion}</p>
+      </div>
+
+      <div class="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col items-center">
+        <span class="text-sm text-texto-secundario mt-1">Inicio</span>
+        <span class="text-lg font-bold">{fechaInicioEsp}</span>
+      </div>
+
+      <div class="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col items-center">
+        <span class="text-sm text-texto-secundario mt-1">Fin</span>
+        <span class="text-lg font-bold">{fechaFinEsp}</span>
+      </div>
+
+      <div class="border border-white/20 rounded-xl p-5 bg-white/5">
+        <p class="text-sm text-gray-400 uppercase mb-1">Aprobado por</p>
+        <p class="text-white text-lg font-semibold">{aprobado_por_nombre || 'No disponible'}</p>
+      </div>
+
+      <div class="border border-white/20 rounded-xl p-5 bg-white/5">
+        <p class="text-sm text-gray-400 uppercase mb-1">Estado</p>
+        <p class="text-white text-lg font-semibold">{estado === 'activo' ? '🟢 Activo' : '🔴 No activo'}</p>
+      </div>
+    </div>
+
+<div class="rounded-xl overflow-hidden shadow-lg border border-white/10 mt-6">
+  <iframe
+    src={`https://www.google.com/maps?q=${encodeURIComponent(ubicacion)}&output=embed`}
+    width="100%"
+    height="300"
+    allowfullscreen=""
+    loading="lazy"
+    referrerpolicy="no-referrer-when-downgrade"
+    class="w-full h-[300px] border-0"
+  ></iframe>
+</div>
+
+    <div class="mt-10">
+      <a href="/torneos" class="inline-block px-6 py-2 bg-terciario text-white rounded-full hover:bg-blue-700 transition duration-200 shadow-md">
+        ← Volver al listado
+      </a>
+    </div>
+  </div>
 </Layout>

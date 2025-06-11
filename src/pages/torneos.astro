@@ -3,9 +3,9 @@ import Layout from "../layouts/Layout.astro"
 import { API_URL } from "astro:env/server"
 import "../styles/global.css"
 
-const response = await fetch(`${API_URL}torneos`);
+const torneosResponse = await fetch(`${API_URL}torneos`);
 
-const torneos = await response.json();
+const torneos = await torneosResponse.json();
 
 const juegos = await fetch(`${API_URL}juegos`);
 
@@ -16,16 +16,12 @@ const juegosData = await juegos.json();
   <div class="max-w-6xl mx-auto px-4 py-10 text-center">
     <div class="flex gap-6 items-center justify-center">
       <form id="formFiltrado" class="flex flex-row items-center mt-10 mb-6 gap-6 flex-wrap justify-center">
-
         <div>
           <label class="block mb-2 text-left text-sm font-medium text-texto-secundario">Ordenar por:</label>
           <select name="ordenarPor" class="w-full max-w-md p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6">
             <option class="text-texto-secundario" value="">Selecciona una opción</option>
-            <option class="text-texto-secundario" value="nombre">Nombre</option>
-            <option class="text-texto-secundario" value="ligas_ganadas">Ligas ganadas</option>
-            <option class="text-texto-secundario" value="torneos_ganados">Torneos ganados</option>
-            <option class="text-texto-secundario" value="ligas_jugadas">Ligas jugadas</option>
-            <option class="text-texto-secundario" value="torneos_jugados">Torneos jugados</option>
+            <option class="text-texto-secundario" value="activo">Activo el evento</option>
+            <option class="text-texto-secundario" value="no activo">Finalizado el evento</option>
           </select>
         </div>
 
@@ -45,22 +41,95 @@ const juegosData = await juegos.json();
       </form>
 
       <form id="busqueda" class="flex flex-row items-center mt-10 mb-6 gap-6 justify-center">
-        <input type="text" name="buscar" placeholder="Buscar equipo..." class="w-full max-w-md p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        <input type="text" name="buscar" placeholder="Buscar torneo..." class="w-full max-w-md p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
         <input type="submit" class="px-4 py-2 h-max bg-terciario text-white rounded-lg hover:bg-blue-700 transition duration-200"></input>
       </form>
 
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 items-start" id="resultados">
-      {torneos.map((equipo: any) => {
+      {torneos.map((torneo: any) => {
         return <div class="w-full max-w-sm mx-auto bg-gradient-to-t from-slate-950 to-slate-800 rounded-2xl shadow-md hover:shadow-lg transition duration-300 p-6 flex flex-col items-center">
-          <img transition:name={`img-${equipo.nombre}`} class="w-60 h-auto object-contain mb-4" src={equipo.urlFoto} alt={equipo.nombre}/>
-          <h3 class="text-lg font-bold mb-2 text-primario">{equipo.nombre}</h3>
-          <p class="text-sm text-texto-primario">🥇 <strong>Ligas ganadas:</strong> {equipo.ligasGanadas}</p>
-          <p class="text-sm text-texto-primario">🏆 <strong>Torneos ganados:</strong> {equipo.torneosGanados}</p>
-          <a href={`/equipo_${equipo.nombre}`} class="mt-2 px-4 py-1 h-max bg-terciario text-white rounded-lg hover:bg-blue-700 transition duration-200">Ver más</a>
+          <img transition:name={`img-${torneo.nombre}`} class="w-60 h-auto object-contain mb-4" src={torneo.url_foto} alt={torneo.nombre}/>
+          <h3 class="text-lg font-bold mb-2 text-primario">{torneo.nombre}</h3>
+          <p class="text-sm text-texto-primario"><strong>Estado: </strong> {torneo.estado === "activo" ? `🟢 ${torneo.estado}` : `🔴 ${torneo.estado}`}</p>
+          <p class="text-sm text-texto-primario">🏟️ <strong>Tipo de juego: </strong>{torneo.tipo_juego}</p>
+          <a href={`/torneo_${torneo.nombre}`} class="mt-2 px-4 py-1 h-max bg-terciario text-white rounded-lg hover:bg-blue-700 transition duration-200">Ver más</a>
         </div>
       })}
     </div>
   </div>
 </Layout>
+
+<script>
+  const form = document.getElementById('busqueda') as HTMLFormElement;
+  const formFiltrado = document.getElementById('formFiltrado') as HTMLFormElement;
+  const resultados = document.getElementById('resultados') as HTMLDivElement;
+
+  const imprimirResultados = (torneos: any) => {
+    if (!torneos || torneos.length === 0) {
+      resultados.innerHTML = '<p class="text-texto-primario text-center col-start-2">No se encontraron torneos.</p>';
+      return;
+    }
+
+    resultados.innerHTML = '';
+
+    torneos.map((torneo: any) => {
+      const div = document.createElement('div');
+      div.className = 'w-full max-w-sm mx-auto bg-gradient-to-t from-slate-950 to-slate-800 rounded-2xl shadow-md hover:shadow-lg transition duration-300 p-6 flex flex-col items-center';
+      div.innerHTML = `
+        <img class="w-60 h-auto object-contain mb-4" src="${torneo.url_foto}" alt="${torneo.nombre}"/>
+        <h3 class="text-lg font-bold mb-2 text-primario">${torneo.nombre}</h3>
+        <p class="text-sm text-texto-primario"><strong>Estado:</strong> ${torneo.estado === "activo" ? `🟢 ${torneo.estado}` : `🔴 ${torneo.estado}`}</p>
+        <p class="text-sm text-texto-primario">🏟️ <strong>Tipo de juego:</strong> ${torneo.tipo_juego}</p>
+        <a href="/torneo_${torneo.nombre}" class="mt-2 px-4 py-1 h-max bg-terciario text-white rounded-lg hover:bg-blue-700 transition duration-200">Ver más</a>
+      `;
+      resultados.appendChild(div);
+    });
+  }
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const botonBuscar = form.querySelector('input[type="submit"]') as HTMLInputElement;
+    botonBuscar.disabled = true;
+
+    resultados.innerHTML = '<p class="text-texto-primario text-center col-start-2">Buscando.... ⏳</p>';
+
+    const datos = new FormData(form);
+    const objetoForm = Object.fromEntries(datos.entries());
+
+    if (!objetoForm.buscar) {
+      resultados.innerHTML = '<p class="col-start-2 text-texto-primario text-center">Por favor, ingresa un nombre de torneo o al menos una letra para realizar la búsqueda.</p>';
+      botonBuscar.disabled = false;
+      return;
+    }
+
+    const response = await fetch(`/api/torneos?buscar=${objetoForm.buscar}`);
+    const torneos = await response.json();
+
+    imprimirResultados(torneos);
+    botonBuscar.disabled = false;
+  });
+
+  formFiltrado.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const botonFiltrar = formFiltrado.querySelector('input[type="submit"]') as HTMLInputElement;
+    botonFiltrar.disabled = true;
+
+    resultados.innerHTML = '<p class="text-texto-primario text-center col-start-2">Filtrando.... ⏳</p>';
+
+    const datos = new FormData(formFiltrado);
+    const objetoForm = Object.fromEntries(datos.entries());
+
+    const ordenarPor = objetoForm.ordenarPor;
+    const tipoDeporte = objetoForm.tipoDeporte;
+
+    const response = await fetch(`/api/torneos?ordenarPor=${ordenarPor}&tipoDeporte=${tipoDeporte}`);
+    const torneos = await response.json();
+
+    imprimirResultados(torneos);
+    botonFiltrar.disabled = false;
+  });
+</script>

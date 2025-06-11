@@ -2,8 +2,6 @@
 import Layout from "../layouts/Layout.astro"
 import Top from "../components/Top.astro"
 import { API_URL } from "astro:env/server"
-import { API_KEY } from "astro:env/server"
-import { USER } from "astro:env/server"
 import "../styles/global.css"
 
 const response = await fetch(`${API_URL}jugadores`);

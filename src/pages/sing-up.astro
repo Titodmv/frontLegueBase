@@ -3,23 +3,115 @@ import Layout from "../layouts/Layout.astro"
 import "../styles/global.css"
 ---
 
-<Layout titulo="Sing Up" descripcion="Página de registro de usuario">
-    <main class="flex flex-col items-center justify-center">
-        <div class="flex flex-col items-center justify-center shadow-sm bg-linear-to-t from-slate-950 to-slate-900 rounded-2xl pt-8">
-            <h1 class="text-3xl">Crear Cuenta</h1>
-            <form class="p-8 w-[350px]">        
-                <label for="username" class="text-primario">Correo Electronico</label>
-                <input type="text" id="username" class="pl-2 mt-1 w-full border border-gray-300 rounded-md shadow-sm focus:ring transition-all focus:ring-blue-500 mb-8" autocomplete="email" required />
-                
-                <label for="contraseña" class="text-primario">Contraseña</label>
-                <input type="password" id="contraseña" class="pl-2 mt-1 w-full border border-gray-300 rounded-md shadow-sm focus:ring transition-all focus:ring-blue-500 mb-8" autocomplete="current-password" required />
+<Layout titulo="Sign Up" descripcion="Página de registro de usuario">
+  <main class="flex flex-col items-center justify-center">
+    <div class="flex flex-col items-center justify-center shadow-sm bg-linear-to-t from-slate-950 to-slate-900 rounded-2xl pt-8">
+      <h1 class="text-3xl">Crear Cuenta</h1>
 
-                <label for="repetir_contraseña" class="text-primario">Repetir Contraseña</label>
-                <input type="password" id="repetir_contraseña" class="pl-2 mt-1 w-full border border-gray-300 rounded-md shadow-sm focus:ring transition-all focus:ring-blue-500 mb-8" autocomplete="current-password" required />
+      <!-- Mensaje de error -->
+      <p id="errorMessage" class="text-red-400 mt-4 mb-2"></p>
 
-                <input type="submit" value="Crear Cuenta" class="w-full bg-blue-600 text-white px-4 py-2 rounded-md cursor-pointer hover:bg-blue-700 transition-all" />
-            </form>
-        </div>
-        <p class="mt-4">¿Ya tienes una cuenta? Inicia sessión <a href="/login" class="underline text-blue-600">aqui</a></p>
-    </main>
+      <form id="signupForm" class="p-8 w-[350px]">
+        <label for="email" class="text-primario">Correo Electrónico</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          class="pl-2 mt-1 w-full border border-gray-300 rounded-md shadow-sm focus:ring transition-all focus:ring-blue-500 mb-8"
+          autocomplete="email"
+          required
+        />
+
+        <label for="password" class="text-primario">Contraseña</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          class="pl-2 mt-1 w-full border border-gray-300 rounded-md shadow-sm focus:ring transition-all focus:ring-blue-500 mb-8"
+          autocomplete="new-password"
+          required
+          minlength="8"
+        />
+
+        <label for="confirmPassword" class="text-primario">Repetir Contraseña</label>
+        <input
+          type="password"
+          id="confirmPassword"
+          name="confirmPassword"
+          class="pl-2 mt-1 w-full border border-gray-300 rounded-md shadow-sm focus:ring transition-all focus:ring-blue-500 mb-8"
+          autocomplete="new-password"
+          required
+          minlength="8"
+        />
+
+        <input
+          type="submit"
+          value="Crear Cuenta"
+          class="w-full bg-blue-600 text-white px-4 py-2 rounded-md cursor-pointer hover:bg-blue-700 transition-all"
+        />
+      </form>
+    </div>
+    <p class="mt-4">
+      ¿Ya tienes una cuenta? Inicia sesión
+      <a href="/login" class="underline text-blue-600">aquí</a>
+    </p>
+  </main>
 </Layout>
+
+
+<script>
+  const form = document.getElementById('signupForm') as HTMLFormElement;
+  const errorEl = document.getElementById('errorMessage') as HTMLParagraphElement;
+
+  form.addEventListener('submit', async (e: Event) => {
+    e.preventDefault();
+    errorEl.textContent = '';
+
+    const formData = new FormData(form);
+    const email = (formData.get('email') as string)?.trim() || '';
+    const password = formData.get('password') as string || '';
+    const confirmPassword = formData.get('confirmPassword') as string || '';
+
+    if (password !== confirmPassword) {
+      errorEl.textContent = 'Las contraseñas no coinciden.';
+      return;
+    }
+    if (password.length < 8) {
+      errorEl.textContent = 'La contraseña debe tener al menos 8 caracteres.';
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',              // para que la cookie se envíe en futuras peticiones
+        body: JSON.stringify({ email, password })
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        errorEl.textContent = result.message || 'Error al crear la cuenta.';
+        return;
+      }
+
+      // Almacenar el JWT en una cookie segura
+      document.cookie = [
+        `token=${result.token as string}`,
+        'Path=/',
+        'Secure',
+        'HttpOnly',       // solo si la cookie la establece el servidor; en cliente no surtirá efecto
+        'SameSite=Strict',
+        'Max-Age=3600'    // 1 hora en segundos
+      ].join('; ');
+
+      // Redirigir al usuario
+      window.location.href = '/usuario';
+    } catch (err) {
+      console.error('Error de red en /api/signup:', err);
+      errorEl.textContent = 'Error de red. Por favor, inténtalo de nuevo.';
+    }
+  });
+</script>
+

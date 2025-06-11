@@ -5,7 +5,7 @@ import "../styles/global.css"
 import { API_URL } from "astro:env/server"
 
 //Para equipos Top
-const response = await fetch(`${API_URL}equipos`);
+const response = await fetch(`/api/equipos`);
 
 const equipos = await response.json();
 
@@ -35,7 +35,7 @@ jugadoresTop = jugadoresTop.map((jugadorTop: any) => {
   return {
     nombre: jugadorTop.nickname.toUpperCase(),
     urlFoto: "/assets/img/usuario.png",
-    atributo1: jugadorTop.nombreEquipo,
+    atributo1: jugadorTop.equipo,
     atributo2: jugadorTop.nombreEstadisticaPrincipal+": "+jugadorTop.valorEstadisticaPrincipal,
   };
 });

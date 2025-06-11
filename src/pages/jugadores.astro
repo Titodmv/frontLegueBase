@@ -10,80 +10,123 @@ const response = await fetch(`${API_URL}jugadores`);
 
 const jugadores = await response.json();
 
-let jugadoresTop = jugadores.sort((a: any, b: any) => {return b.valorEstadisticaPrincipal - a.valorEstadisticaPrincipal;});
+let jugadoresTop = jugadores.sort((a: any, b: any) => {return b.valorTotal - a.valorTotal;});
 
 //aqui se pasa los jugadoresTop a un array de objetos con los atributos necesarios para el top
 jugadoresTop = jugadoresTop.map((jugadorTop: any) => {
   return {
     nombre: jugadorTop.nickname.toUpperCase(),
     urlFoto: "/assets/img/usuario.png",
-    atributo1: jugadorTop.nombreEquipo,
-    atributo2: jugadorTop.nombreEstadisticaPrincipal+": "+jugadorTop.valorEstadisticaPrincipal,
+    atributo1: jugadorTop.equipo,
+    atributo2: jugadorTop.valorTotal,
   };
 });
-
-const juegos = await fetch(`${API_URL}juegos`);
-
-const juegosData = await juegos.json();
 
 jugadoresTop = jugadoresTop.slice(0, 3);
 ---
 
-<Layout titulo="Equipos" descripcion="Descubre a tus equipos favoritos en cada partido">
-  <Top titulo="🏆 TOP MEJORES JUGADORES" top={jugadoresTop} atributo1=`EQUIPO: ` atributo2=``/>
-
+<Layout titulo="Equipos" descripcion="Descubre a nuevos jugadores, siguelos o comparte sus estadisticas con el mundo">
+  <Top titulo="🏆 TOP MEJORES JUGADORES" top={jugadoresTop} atributo1=`🛡️ EQUIPO: ` atributo2="⭐ Puntos: "/>
 
   <div class="max-w-6xl mx-auto px-4 py-10 text-center">
 
     <hr class="border-t-2 border-terciario my-20"/>
 
     <div class="flex gap-6 items-center justify-center">
-      <form id="formFiltrado" class="flex flex-row items-center mt-10 mb-6 gap-6 flex-wrap justify-center">
-
-        <div>
-          <label class="block mb-2 text-left text-sm font-medium text-texto-secundario">Ordenar por:</label>
-          <select name="ordenarPor" class="w-full max-w-md p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6">
-            <option class="text-texto-secundario" value="">Selecciona una opción</option>
-            <option class="text-texto-secundario" value="nombre">Nombre</option>
-            <option class="text-texto-secundario" value="ligas_ganadas">Ligas ganadas</option>
-            <option class="text-texto-secundario" value="torneos_ganados">Torneos ganados</option>
-            <option class="text-texto-secundario" value="ligas_jugadas">Ligas jugadas</option>
-            <option class="text-texto-secundario" value="torneos_jugados">Torneos jugados</option>
-          </select>
-        </div>
-
-        <div>
-          <label class="block mb-2 text-left text-sm font-medium text-texto-secundario">Tipo de deporte:</label>
-          <select name="tipoDeporte" class="w-full max-w-md p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6">
-            <option class="text-texto-secundario" value="">Selecciona una opción</option>
-            {
-              juegosData.map((juego: any) => {
-                return <option class="text-texto-secundario" value={juego.id}>{juego.nombre}</option>
-              })
-            }
-          </select>
-        </div>
- 
-        <input type="submit" value="Filtrar" class="px-4 py-2 bg-terciario text-white rounded-lg hover:bg-blue-700 transition duration-200"/>
-      </form>
-
-      <form id="busqueda" class="flex flex-row items-center mt-10 mb-6 gap-6 justify-center">
-        <input type="text" name="buscar" placeholder="Buscar equipo..." class="w-full max-w-md p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+      <form id="busqueda" class="flex flex-row items-center mt-10 mb-6 gap-6 justify-center w-full">
+        <input type="text" name="buscar" placeholder="Buscar jugador..." class="w-full max-w-md p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
         <input type="submit" class="px-4 py-2 h-max bg-terciario text-white rounded-lg hover:bg-blue-700 transition duration-200"></input>
       </form>
-
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 items-start" id="resultados">
       {jugadores.map((jugador: any) => {
-        return <div class="w-full max-w-sm mx-auto bg-gradient-to-t from-slate-950 to-slate-800 rounded-2xl shadow-md hover:shadow-lg transition duration-300 p-6 flex flex-col items-center">
-          <img transition:name={`img-${jugador.nickname}`} class="w-60 h-auto object-contain mb-4" src="/assets/img/usuario.png" alt={jugador.nickname}/>
-          <h3 class="text-lg font-bold mb-2 text-primario">{jugador.nickname.toUpperCase()}</h3>
-          <!--<p class="text-sm text-texto-primario">🥇 <strong>Equipo: </strong> {jugador.nombreEquipo}</p>
-          <p class="text-sm text-texto-primario">🏆 <strong>{jugador.nombreEstadisticaPrincipal}:</strong> {jugador.valorEstadisticaPrincipal}</p> -->
-          <a href={`/jugador_${jugador.nickname}`} class="mt-2 px-4 py-1 h-max bg-terciario text-white rounded-lg hover:bg-blue-700 transition duration-200">Ver más</a>
-        </div>
+        return (
+          <div class="w-full max-w-sm mx-auto bg-gradient-to-t from-slate-950 to-slate-800 rounded-2xl shadow-md hover:shadow-lg transition duration-300 p-6 flex flex-col items-center">
+            <img
+              transition:name={`img-${jugador.nickname}`}
+              class="w-60 h-auto object-contain mb-4"
+              src="/assets/img/usuario.png"
+              alt={jugador.nickname}
+            />
+
+            <h3 class="text-lg font-bold mb-2 text-primario">{jugador.nickname.toUpperCase()}</h3>
+
+            <p class="text-sm text-texto-primario mb-1">
+              🛡️ <strong>Equipo:</strong> {jugador.equipo || 'Sin equipo'}
+            </p>
+
+            <p class="text-sm text-texto-primario mb-3">
+              ⭐ <strong>Puntos totales:</strong> {jugador.valorTotal}
+            </p>
+
+            <a
+              href={`/jugador_${jugador.nickname}`}
+              class="mt-2 px-4 py-1 h-max bg-terciario text-white rounded-lg hover:bg-blue-700 transition duration-200"
+            >
+              Ver más
+            </a>
+          </div>
+        );
       })}
-    </div>
   </div>
 </Layout>
+
+<script>
+  const form = document.getElementById('busqueda') as HTMLFormElement;
+  const resultados = document.getElementById('resultados') as HTMLDivElement;
+
+  const imprimirResultados = (jugadores: any[]) => {
+    resultados.innerHTML = '';
+
+    if (!jugadores || jugadores.length === 0) {
+      resultados.innerHTML = '<p class="text-texto-primario text-center col-span-full">No se encontraron jugadores con ese nickname.</p>';
+      return;
+    }
+
+    jugadores.forEach((jugador: any) => {
+      const div = document.createElement('div');
+      div.className = 'w-full max-w-sm mx-auto bg-gradient-to-t from-slate-950 to-slate-800 rounded-2xl shadow-md hover:shadow-lg transition duration-300 p-6 flex flex-col items-center';
+      div.innerHTML = `
+        <img class="w-60 h-auto object-contain mb-4" src="/assets/img/usuario.png" alt="${jugador.nickname}" />
+        <h3 class="text-lg font-bold mb-2 text-primario">${jugador.nickname.toUpperCase()}</h3>
+        <p class="text-sm text-texto-primario mb-1">🛡️ <strong>Equipo:</strong> ${jugador.equipo || 'Sin equipo'}</p>
+        <p class="text-sm text-texto-primario mb-3">⭐ <strong>Puntos totales:</strong> ${jugador.valorTotal}</p>
+        <a href="/jugador_${jugador.nickname}" class="mt-2 px-4 py-1 h-max bg-terciario text-white rounded-lg hover:bg-blue-700 transition duration-200">Ver más</a>
+      `;
+      resultados.appendChild(div);
+    });
+  };
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const botonBuscar = form.querySelector('input[type="submit"]') as HTMLInputElement;
+    botonBuscar.disabled = true;
+
+    resultados.innerHTML = '<p class="text-texto-primario text-center col-span-full">Buscando jugadores... ⏳</p>';
+
+    const datos = new FormData(form);
+    const buscar = datos.get('buscar')?.toString().trim();
+
+    if (!buscar) {
+      resultados.innerHTML = '<p class="text-texto-primario text-center col-span-full">Introduce un nickname para buscar.</p>';
+      botonBuscar.disabled = false;
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/jugadores?buscar=${encodeURIComponent(buscar)}`);
+
+      if (!response.ok) throw new Error("Error al consultar jugadores");
+
+      const jugadores = await response.json();
+      imprimirResultados(jugadores);
+    } catch (error) {
+      console.error("Error al buscar jugadores:", error);
+      resultados.innerHTML = '<p class="text-texto-primario text-center col-span-full">Ocurrió un error al buscar jugadores.</p>';
+    } finally {
+      botonBuscar.disabled = false;
+    }
+  });
+</script>

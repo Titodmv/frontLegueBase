@@ -10,8 +10,6 @@ export async function getStaticPaths() {
   const response = await fetch(`${API_URL}jugadores`);
 
   const jugadores = await response.json();
-
-  console.log("Jugadores obtenidos:", jugadores);
   
 
   return jugadores.map((jugador: any) => ({
@@ -21,46 +19,76 @@ export async function getStaticPaths() {
 }
 
 const { jugador } = Astro.props;
-const { nickname, urlFoto, nombreEquipo, nombreEstadisticaPrincipal, valorEstadisticaPrincipal, fechaUnion } = jugador;
+const { id, nickname, urlFoto, equipo, valorTotal, fechaNacimiento, juego, usuario: { nombre, activo, fechaRegistro} } = jugador;
 
-console.log(jugador);
-
-let fecha = new Date(fechaUnion);
-let fechaEspañol = fecha.toLocaleDateString("es-ES", {
+let fechaNacimientoDate = new Date(fechaNacimiento);
+let fechaNacimientoEspañol = fechaNacimientoDate.toLocaleDateString("es-ES", {
     year: "numeric",
     month: "long",
-    day: "numeric",
+    day: "numeric", 
 });
 
-fechaEspañol = fechaEspañol.toUpperCase();
+let fechaRegistroDate = new Date(fechaRegistro);
+let fechaRegistroEspañol = fechaRegistroDate.toLocaleDateString("es-ES", {
+    year: "numeric",
+    month: "long",
+    day: "numeric", 
+});
+
+
+fechaNacimientoEspañol = fechaNacimientoEspañol.toUpperCase();
+fechaRegistroEspañol = fechaRegistroEspañol.toUpperCase();
+
+const seguidoresResponse = await fetch(`${API_URL}jugador/${id}/seguidores`)
+const seguidores = await seguidoresResponse.json()
+
+const {totalSeguidores} = seguidores;
 
 export const prerender = true;
 ---
-<Layout titulo={nickname} descripcion=" d"> 
-    <div class="max-w-6xl mx-auto px-4 py-10 text-center">
-        <h1 class="text-4xl font-bold mb-4">{nickname}</h1>
-        <img transition:name={`img-${nickname}`} class="w-60 h-auto object-contain mb-4 mx-auto" src="/assets/img/usuario.png" alt={nickname} />
+<Layout titulo={nickname} descripcion="Perfil del jugador"> 
+  <div class="max-w-6xl mx-auto px-4 py-10 text-center">
+    <img transition:name={`img-${nickname}`} class="w-40 h-40 object-cover rounded-full border-4 border-white/20 shadow-lg mx-auto mb-4" src={urlFoto || "/assets/img/usuario.png"} alt={nickname} />
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
-            <div class="border border-white/20 rounded-lg p-4 text-left">
-                <p class="text-sm text-gray-400 uppercase">Equipo</p>
-                <p class="text-xl text-white font-semibold">{nombreEquipo}</p>
-            </div>
+    <h1 class="text-4xl font-extrabold text-primario mb-2 uppercase">{nickname}</h1>
+    <p class="text-texto-secundario text-sm mb-4">{totalSeguidores === 1 ? `${totalSeguidores} Seguidor` : `${totalSeguidores} Seguidores`} - {activo ? '🟢 En linea' : '🔴 Fuera de linea'}</p>
 
-            <div class="border border-white/20 rounded-lg p-4 text-left">
-                <p class="text-sm text-gray-400 uppercase">Fecha de Union</p>
-                <p class="text-xl text-white font-semibold">{fechaEspañol}</p>
-            </div>
+   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6 text-left">
+      <div class="border border-white/20 rounded-xl p-4">
+        <p class="text-sm text-gray-400 uppercase mb-1">Equipo</p>
+        <p class="text-white text-lg font-semibold">{equipo}</p>
+      </div>
 
-            <div class="border border-white/20 rounded-lg p-4 text-left">
-                <p class="text-sm text-gray-400 uppercase">{nombreEstadisticaPrincipal}</p>
-                <p class="text-xl text-white font-semibold">{valorEstadisticaPrincipal}</p>
-            </div>
-        </div>
+      <div class="border border-white/20 rounded-xl p-4">
+        <p class="text-sm text-gray-400 uppercase mb-1">Puntos totales</p>
+        <p class="text-white text-lg font-semibold">{valorTotal}</p>
+      </div>
 
-    
-        <div class="max-w-6xl mx-auto px-4 py-10 text-center">
-            <a href="/jugadores" class="px-4 py-2 bg-terciario text-white rounded-lg hover:bg-blue-700 transition duration-200">Volver a los jugadores</a>
-        </div>
+       <div class="border border-white/20 rounded-xl p-4">
+        <p class="text-sm text-gray-400 uppercase mb-1">Jugador de</p>
+        <p class="text-white text-lg font-semibold">{juego}</p>
+      </div>
+
+      <div class="border border-white/20 rounded-xl p-4">
+        <p class="text-sm text-gray-400 uppercase mb-1">Fecha de unión</p>
+        <p class="text-white text-lg font-semibold">{fechaRegistroEspañol}</p>
+      </div>
+
+      <div class="border border-white/20 rounded-xl p-4">
+        <p class="text-sm text-gray-400 uppercase mb-1">Nombre real</p>
+        <p class="text-white text-lg font-semibold">{nombre}</p>
+      </div>
+
+      <div class="border border-white/20 rounded-xl p-4">
+        <p class="text-sm text-gray-400 uppercase mb-1">Fecha de nacimiento</p>
+        <p class="text-white text-lg font-semibold">{fechaNacimientoEspañol}</p>
+      </div>
     </div>
+
+    <div class="mt-10">
+      <a href="/jugadores" class="px-6 py-2 bg-terciario text-white rounded-lg hover:bg-blue-700 transition duration-200">
+        Volver a los jugadores
+      </a>
+    </div>
+  </div>
 </Layout>

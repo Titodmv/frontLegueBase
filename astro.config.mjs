@@ -18,6 +18,7 @@ export default defineConfig({
         USER: envField.string({ context: 'server', access: 'secret'}),
         API_KEY: envField.string({ context: 'server', access:'secret'}),
         API_URL: envField.string({ context: 'server', access: 'secret'}),
+        
     }
   },
 });

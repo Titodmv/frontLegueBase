@@ -16,7 +16,8 @@ export async function getStaticPaths() {
 }
 
 const { equipo } = Astro.props;
-const { nombre, urlFoto, ligasGanadas, torneosGanados, fechaCreacion, torneosJugados, ligasJugadas } = equipo;
+const { id, nombre, urlFoto, ligasGanadas, torneosGanados, fechaCreacion, torneosJugados, ligasJugadas, juego = {} as { nombre: string; descripcion: string; maxEquiposPorPartido: number; maxJugadoresPorEquipo: number; nombreEstadisticaPrincipal: string } } = equipo;
+
 
 let fecha = new Date(fechaCreacion);
 let fechaEspañol = fecha.toLocaleDateString("es-ES", {
@@ -25,46 +26,84 @@ let fechaEspañol = fecha.toLocaleDateString("es-ES", {
     day: "numeric",
 });
 
+const respuestaSeguidores = await fetch(`${API_URL}equipos/${id}/seguidores`, {
+});
+
+const seguidores = await respuestaSeguidores.json();
+
+console.log(seguidores);
+
 fechaEspañol = fechaEspañol.toUpperCase();
 
 export const prerender = true;
 ---
 
 <Layout titulo={nombre} descripcion={`El quipo ${nombre} tiene ${ligasGanadas} ligas ganadas y ${torneosGanados} torneos ganados.`}>
-    <div class="max-w-6xl mx-auto px-4 py-10 text-center">
-        <h1 class="text-4xl font-bold mb-4">{nombre}</h1>
-        <img transition:name={`img-${nombre}`} class="w-60 h-auto object-contain mb-4 mx-auto" src={urlFoto} alt={nombre} />
+    <div class="max-w-4xl mx-auto px-4 py-10 text-center">
+        <img transition:name={`img-${nombre}`} class="w-48 h-48 object-cover rounded-full border-4 border-white/20 shadow-lg mx-auto mb-4" src={urlFoto} alt={nombre} />
+        <h1 class="text-4xl font-extrabold text-primario mb-1">{nombre}</h1>
+        <p class="text-texto-primario text-sm mb-1">Fundado el {fechaEspañol}</p>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
-            <div class="border border-white/20 rounded-lg p-4 text-left">
-                <p class="text-sm text-gray-400 uppercase">Ligas ganadas</p>
-                <p class="text-xl text-white font-semibold">{ligasGanadas}</p>
-            </div>
-
-            <div class="border border-white/20 rounded-lg p-4 text-left">
-                <p class="text-sm text-gray-400 uppercase">Torneos ganados</p>
-                <p class="text-xl text-white font-semibold">{torneosGanados}</p>
-            </div>
-
-            <div class="border border-white/20 rounded-lg p-4 text-left">
-                <p class="text-sm text-gray-400 uppercase">Fecha de creación</p>
-                <p class="text-xl text-white font-semibold">{fechaEspañol}</p>
-            </div>
-
-            <div class="border border-white/20 rounded-lg p-4 text-left">
-                <p class="text-sm text-gray-400 uppercase">Torneos jugados</p>
-                <p class="text-xl text-white font-semibold">{torneosJugados}</p>
-            </div>
-
-            <div class="border border-white/20 rounded-lg p-4 text-left sm:col-span-2">
-                <p class="text-sm text-gray-400 uppercase">Ligas jugadas</p>
-                <p class="text-xl text-white font-semibold">{ligasJugadas}</p>
-            </div>
+        <div class="text-sm text-gray-400 mb-6">
+            <span class="inline-block px-3 py-1 rounded-full border border-white/10 bg-white/5 text-white text-xs font-medium">
+            {seguidores.length} {seguidores.length === 1 ? 'seguidor' : 'seguidores'}
+            </span>
         </div>
 
-    
-        <div class="max-w-6xl mx-auto px-4 py-10 text-center">
-            <a href="/equipos" class="px-4 py-2 bg-terciario text-white rounded-lg hover:bg-blue-700 transition duration-200">Volver a equipos</a>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6 text-white mb-4">
+        <div class="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col items-center">
+            <span class="text-3xl font-bold">{torneosGanados}</span>
+            <span class="text-sm text-texto-secundario mt-1 flex items-center gap-1">
+            🏆 <span>Torneos ganados</span>
+            </span>
+        </div>
+
+        <div class="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col items-center">
+            <span class="text-3xl font-bold">{ligasGanadas}</span>
+            <span class="text-sm text-texto-secundario mt-1 flex items-center gap-1">
+            🥇 <span>Ligas ganadas</span>
+            </span>
+        </div>
+
+        <div class="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col items-center">
+            <span class="text-3xl font-bold">{torneosJugados}</span>
+            <span class="text-sm text-texto-secundario mt-1 flex items-center gap-1">
+            🎮 <span>Torneos jugados</span>
+            </span>
+        </div>
+
+        <div class="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col items-center">
+            <span class="text-3xl font-bold">{ligasJugadas}</span>
+            <span class="text-sm text-texto-secundario mt-1 flex items-center gap-1">
+            📅 <span>Ligas jugadas</span>
+            </span>
         </div>
     </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
+    <div class="border border-white/20 rounded-xl p-5 bg-white/5">
+      <p class="text-sm text-gray-400 uppercase mb-1">Deporte</p>
+      <p class="text-white text-lg font-semibold">{juego.nombre}</p>
+      <p class="text-texto-secundario text-sm">{juego.descripcion}</p>
+    </div>
+
+    <div class="border border-white/20 rounded-xl p-5 bg-white/5">
+      <p class="text-sm text-gray-400 uppercase mb-1">Participantes</p>
+      <p class="text-white text-lg font-semibold">⚔️ {juego.maxEquiposPorPartido} equipos · 👤 {juego.maxJugadoresPorEquipo} jugadores/equipo</p>
+    </div>
+
+    <div class="border border-white/20 rounded-xl p-5 sm:col-span-2 bg-white/5">
+      <p class="text-sm text-gray-400 uppercase mb-1">Estadística principal</p>
+      <p class="text-white text-lg font-semibold">{juego.nombreEstadisticaPrincipal}</p>
+    </div>
+  </div>
+
+  <div class="mt-10">
+    <a href="/equipos" class="inline-block px-6 py-2 bg-terciario text-white rounded-full hover:bg-blue-700 transition duration-200 shadow-md">
+      ← Volver al listado
+    </a>
+  </div>
+</div>
+
+
 </Layout>

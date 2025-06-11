@@ -1,28 +1,27 @@
 ---
 import Layout from "../layouts/Layout.astro"
 import Top from "../components/Top.astro"
-import { API_URL } from "astro:env/server"
 import "../styles/global.css"
+import { API_URL } from "astro:env/server";
 
 const response = await fetch(`${API_URL}equipos`);
-
 const equipos = await response.json();
 
-const juegos = await fetch(`${API_URL}juegos`);
-
-const juegosData = await juegos.json();
-
-
-let equiposTop = equipos.sort((a: any, b: any) => {return (b.ligasGanadas+b.torneosGanados) - (a.ligasGanadas+a.torneosGanados);});
+let equiposTop = equipos.sort((a: any, b: any) => {
+  return (b.ligasGanadas + b.torneosGanados) - (a.ligasGanadas + a.torneosGanados);
+});
 
 equiposTop = equiposTop.map((equipo: any) => {
   return {
-	nombre: equipo.nombre.toUpperCase(),
-	urlFoto: equipo.urlFoto || "/assets/img/equipo-default.png",
-	atributo1: equipo.ligasGanadas || 0,
-	atributo2: equipo.torneosGanados || 0,
+    nombre: equipo.nombre.toUpperCase(),
+    urlFoto: equipo.urlFoto || "/assets/img/equipo-default.png",
+    atributo1: equipo.ligasGanadas || 0,
+    atributo2: equipo.torneosGanados || 0,
   };
 });
+
+const responseJuegos = await fetch(`${API_URL}juegos`);
+const juegos = await responseJuegos.json();
 
 equiposTop = equiposTop.slice(0, 3);
 ---
@@ -54,10 +53,11 @@ equiposTop = equiposTop.slice(0, 3);
           <select name="tipoDeporte" class="w-full max-w-md p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6">
             <option class="text-texto-secundario" value="">Selecciona una opción</option>
             {
-              juegosData.map((juego: any) => {
+              juegos.map((juego: any) => {
                 return <option class="text-texto-secundario" value={juego.id}>{juego.nombre}</option>
               })
             }
+            
           </select>
         </div>
  
@@ -68,7 +68,6 @@ equiposTop = equiposTop.slice(0, 3);
         <input type="text" name="buscar" placeholder="Buscar equipo..." class="w-full max-w-md p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
         <input type="submit" class="px-4 py-2 h-max bg-terciario text-white rounded-lg hover:bg-blue-700 transition duration-200"></input>
       </form>
-
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 items-start" id="resultados">

@@ -17,11 +17,11 @@ const juegosData = await juegos.json();
     <div class="flex gap-6 items-center justify-center">
       <form id="formFiltrado" class="flex flex-row items-center mt-10 mb-6 gap-6 flex-wrap justify-center">
         <div>
-          <label class="block mb-2 text-left text-sm font-medium text-texto-secundario">Ordenar por:</label>
+          <label class="block mb-2 text-left text-sm font-medium text-texto-secundario">Filtrar por:</label>
           <select name="ordenarPor" class="w-full max-w-md p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6">
             <option class="text-texto-secundario" value="">Selecciona una opción</option>
             <option class="text-texto-secundario" value="activo">Activo el evento</option>
-            <option class="text-texto-secundario" value="no activo">Finalizado el evento</option>
+            <option class="text-texto-secundario" value="no activo">No activo el evento</option>
           </select>
         </div>
 

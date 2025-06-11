@@ -5,7 +5,7 @@ import "../styles/global.css"
 import { API_URL } from "astro:env/server"
 
 //Para equipos Top
-const response = await fetch(`/api/equipos`);
+const response = await fetch(`${API_URL}equipos`);
 
 const equipos = await response.json();
 

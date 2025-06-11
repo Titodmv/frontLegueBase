@@ -30,7 +30,6 @@ const jugadores = await response2.json();
 
 let jugadoresTop = jugadores.sort((a: any, b: any) => {return b.valorEstadisticaPrincipal - a.valorEstadisticaPrincipal;});
 
-//aqui se pasa los jugadoresTop a un array de objetos con los atributos necesarios para el top
 jugadoresTop = jugadoresTop.map((jugadorTop: any) => {
   return {
     nombre: jugadorTop.nickname.toUpperCase(),
@@ -42,8 +41,7 @@ jugadoresTop = jugadoresTop.map((jugadorTop: any) => {
 
 jugadoresTop = jugadoresTop.slice(0, 3);
 ---
-
-<Layout titulo="Inicio" descripcion="Bienvenido a League Base. Crea un torneo en minutos, sin registro.">
+<Layout titulo="Inicio" descripcion="Bienvenido a League Base. Crea un torneo en minutos.">
 	<main>
 		<section class="flex flex-col-reverse lg:flex-row justify-center max-w-7xl m-auto mb-12">
 			<article class="max-w-md m-auto text-center md:text-left">
@@ -55,7 +53,42 @@ jugadoresTop = jugadoresTop.slice(0, 3);
 			</article>
 			<img class="m-auto xl:h-[90vh] lg:h-[80vh] md:h-[60vh] h-[40vh] max-w-fit" src="/assets/img/portada2.png" alt="Imagen portada de LeagueBase">
 		</section>
+
+		<section class="bg-slate-900 text-texto-primario py-16 px-6 text-center">
+			<h2 class="text-2xl font-bold mb-8">¿Por qué elegir LeagueBase?</h2>
+			<div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+				<div><h3 class="font-semibold">🔥 Multideporte y eSports</h3><p>Gestiona torneos de fútbol, baloncesto, FIFA, LoL y más.</p></div>
+				<div><h3 class="font-semibold">⚙️ Automatización total</h3><p>Calendarios, emparejamientos y resultados automáticos.</p></div>
+				<div><h3 class="font-semibold">📊 Estadísticas en tiempo real</h3><p>Rankings y métricas visibles para todos los participantes.</p></div>
+			</div>
+		</section>
+
+		<section class="text-texto-primario py-16 px-6 text-center">
+			<h2 class="text-2xl font-bold mb-8">¿Para quién es LeagueBase?</h2>
+			<div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+				<div><h3 class="font-semibold">🎮 Jugadores</h3><p>Participa en competiciones, gana trofeos y sube de nivel.</p></div>
+				<div><h3 class="font-semibold">🧑‍💼 Organizadores</h3><p>Crea torneos y ligas en minutos con total control.</p></div>
+				<div><h3 class="font-semibold">🧑‍⚖️ Árbitros</h3><p>Valida partidos y asegura la justicia del juego.</p></div>
+			</div>
+		</section>
+
+		<section class="bg-slate-900 text-texto-primario py-16 px-6 text-center">
+			<h2 class="text-2xl font-bold mb-8">🔐 Seguridad y transparencia</h2>
+  			<p class="max-w-3xl mx-auto text-[16px]">En LeagueBase tomamos la competición en serio: tus datos están protegidos con autenticación JWT, y los resultados de los partidos son validados por árbitros o automáticamente en función de las reglas del torneo.</p>
+		</section>
+
+		<section class= "text-texto-primario py-16 px-6 text-center">
+  			<h2 class="text-2xl font-bold mb-8">Diseñado para clubes y academias</h2>
+  			<p class="max-w-3xl mx-auto">¿Eres parte de una institución deportiva o una academia de eSports? Gestiona múltiples equipos, revisa el rendimiento de tus jugadores y controla las competiciones desde un solo panel.</p>
+		</section>
+
+		<Top titulo="🏆 TOP MEJORES EQUIPOS" top={equiposTop} atributo1=`🥇 Ligas ganadas: ` atributo2=`🏆 Torneos ganados: `/>
+		<Top titulo="🏆 TOP MEJORES JUGADORES" top={jugadoresTop} atributo1=`EQUIPO: ` atributo2=``/>
+
+		<section class="py-16 text-center text-texto-primario">
+			<h2 class="text-2xl font-bold mb-4">¿Listo para comenzar?</h2>
+			<p class="mb-6">Crea tu torneo en segundos. ¡Sin complicaciones y gratis!</p>
+			<a href="/crear-torneo" class="px-6 py-3 font-montserrat text-[14px] lg:text-[16px] text-white bg-slate-900 hover:bg-[#111827] shadow-lg rounded-full transition duration-200 ease-in-out transform hover:scale-105">Crear Torneo</a>
+		</section>
 	</main>
-  <Top titulo="🏆 TOP MEJORES EQUIPOS" top={equiposTop} atributo1=`🥇 Ligas ganadas: ` atributo2=`🏆 Torneos ganados: `/>
-  <Top titulo="🏆 TOP MEJORES JUGADORES" top={jugadoresTop} atributo1=`EQUIPO: ` atributo2=``/>
 </Layout>
